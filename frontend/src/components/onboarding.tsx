@@ -2,11 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 
+import { Icon, type IconName } from "./icon";
+
 const ONBOARDING_KEY = "stellarinsure-onboarded";
 
 interface Step {
   id: string;
-  icon: string;
+  icon: IconName;
   title: string;
   description: string;
 }
@@ -14,31 +16,31 @@ interface Step {
 const STEPS: Step[] = [
   {
     id: "welcome",
-    icon: "🌟",
+    icon: "spark",
     title: "Welcome to StellarInsure",
     description:
-      "Parametric insurance on the Stellar blockchain. Policies trigger and pay out automatically — no claims agents, no paperwork, no delays.",
+      "Parametric insurance on the Stellar blockchain. Policies trigger and pay out automatically, with no claims agents, paperwork, or unnecessary delays.",
   },
   {
     id: "wallet",
     title: "Connect Your Stellar Wallet",
-    icon: "🔑",
+    icon: "wallet",
     description:
       "StellarInsure uses your Stellar public key as your identity. Connect a compatible wallet such as Freighter, Lobstr, or xBull to sign in securely. Your private key never leaves your device.",
   },
   {
     id: "policy-types",
-    icon: "🛡️",
+    icon: "shield",
     title: "Choose Your Coverage",
     description:
-      "We offer five policy types: Weather (rainfall triggers), Flight Delay, DeFi Risk, Health, and Asset Protection. Each policy defines a coverage amount and a trigger condition evaluated automatically on-chain.",
+      "We offer five policy types: Weather, Flight Delay, DeFi Risk, Health, and Asset Protection. Each policy defines a coverage amount and trigger condition evaluated automatically on-chain.",
   },
   {
     id: "first-policy",
-    icon: "📋",
+    icon: "document",
     title: "Create Your First Policy",
     description:
-      "Head to the Coverage section, pick a policy type, set your coverage amount and premium, then confirm on-chain. Once active, your policy monitors conditions automatically and pays out the moment a trigger is verified.",
+      "Head to the Coverage section, pick a policy type, set your coverage amount and premium, then confirm on-chain. Once active, your policy monitors conditions automatically and pays out when a trigger is verified.",
   },
 ];
 
@@ -108,7 +110,6 @@ export function OnboardingFlow({ onComplete }: OnboardingProps) {
       onKeyDown={handleKeyDown}
     >
       <div className="ob-modal">
-        {/* Skip button */}
         <button
           id="ob-skip"
           className="ob-skip"
@@ -118,7 +119,6 @@ export function OnboardingFlow({ onComplete }: OnboardingProps) {
           Skip
         </button>
 
-        {/* Progress dots */}
         <div className="ob-progress" role="tablist" aria-label="Onboarding steps">
           {STEPS.map((s, i) => (
             <button
@@ -134,13 +134,12 @@ export function OnboardingFlow({ onComplete }: OnboardingProps) {
           ))}
         </div>
 
-        {/* Content */}
         <div
           className={`ob-content ${animating ? "ob-content--fade" : ""}`}
           aria-live="polite"
         >
           <div className="ob-icon" aria-hidden="true">
-            {current.icon}
+            <Icon name={current.icon} size="lg" tone="accent" />
           </div>
           <h2 id="ob-title" className="ob-title">
             {current.title}
@@ -150,7 +149,6 @@ export function OnboardingFlow({ onComplete }: OnboardingProps) {
           </p>
         </div>
 
-        {/* Navigation */}
         <div className="ob-nav">
           <button
             className="ob-btn ob-btn--ghost"
@@ -158,7 +156,7 @@ export function OnboardingFlow({ onComplete }: OnboardingProps) {
             disabled={step === 0}
             aria-label="Previous step"
           >
-            ← Back
+            Back
           </button>
 
           <span className="ob-step-counter" aria-label={`Step ${step + 1} of ${STEPS.length}`}>
@@ -171,7 +169,7 @@ export function OnboardingFlow({ onComplete }: OnboardingProps) {
             aria-label={isLast ? "Complete onboarding" : "Next step"}
             autoFocus
           >
-            {isLast ? "Get Started →" : "Next →"}
+            {isLast ? "Get Started" : "Next"}
           </button>
         </div>
       </div>
@@ -179,7 +177,6 @@ export function OnboardingFlow({ onComplete }: OnboardingProps) {
   );
 }
 
-/** Hook to check if the user has completed onboarding */
 export function useOnboarding() {
   const [completed, setCompleted] = useState(true);
 

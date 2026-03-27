@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 
 import { FeatureCard } from "@/components/feature-card";
+import { Icon } from "@/components/icon";
 import { useAppTranslation } from "@/i18n/provider";
 
 export default function HomePage() {
@@ -41,14 +42,17 @@ export default function HomePage() {
 
           <aside className="metrics" aria-label={t("hero.metricsLabel")}>
             <div className="hero-card metric">
+              <Icon name="clock" size="md" tone="accent" />
               <strong>3m</strong>
               <span>{t("metrics.processing")}</span>
             </div>
             <div className="hero-card metric">
+              <Icon name="globe" size="md" tone="accent" />
               <strong>24/7</strong>
               <span>{t("metrics.availability")}</span>
             </div>
             <div className="hero-card metric">
+              <Icon name="language" size="md" tone="accent" />
               <strong>2</strong>
               <span>{t("metrics.languages")}</span>
             </div>
@@ -65,6 +69,7 @@ export default function HomePage() {
 
         <div className="feature-grid">
           <FeatureCard
+            icon="shield"
             title={t("coverage.cards.weather.title")}
             description={t("coverage.cards.weather.description")}
             bullets={[
@@ -73,6 +78,7 @@ export default function HomePage() {
             ]}
           />
           <FeatureCard
+            icon="clock"
             title={t("coverage.cards.flight.title")}
             description={t("coverage.cards.flight.description")}
             bullets={[
@@ -81,6 +87,7 @@ export default function HomePage() {
             ]}
           />
           <FeatureCard
+            icon="spark"
             title={t("coverage.cards.defi.title")}
             description={t("coverage.cards.defi.description")}
             bullets={[
@@ -100,7 +107,10 @@ export default function HomePage() {
 
         <div className="workflow-grid">
           <article className="panel">
-            <h3>{t("workflow.userJourney.title")}</h3>
+            <div className="panel-heading">
+              <Icon name="wallet" size="md" tone="accent" />
+              <h3>{t("workflow.userJourney.title")}</h3>
+            </div>
             <ul>
               <li>{t("workflow.userJourney.steps.0")}</li>
               <li>{t("workflow.userJourney.steps.1")}</li>
@@ -108,7 +118,10 @@ export default function HomePage() {
             </ul>
           </article>
           <article className="panel">
-            <h3>{t("workflow.accessibility.title")}</h3>
+            <div className="panel-heading">
+              <Icon name="globe" size="md" tone="accent" />
+              <h3>{t("workflow.accessibility.title")}</h3>
+            </div>
             <ul>
               <li>{t("workflow.accessibility.steps.0")}</li>
               <li>{t("workflow.accessibility.steps.1")}</li>

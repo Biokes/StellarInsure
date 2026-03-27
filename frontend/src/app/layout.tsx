@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { LanguageProvider } from "@/i18n/provider";
+import { MaintenanceBanner } from "@/components/maintenance-banner";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { OnboardingFlow } from "@/components/onboarding";
 import { PageTransition } from "@/components/page-transition";
@@ -27,6 +28,8 @@ export default function RootLayout({
             Skip to main content
           </a>
           <div className="page-shell">
+            <MaintenanceBanner />
+
             <header className="topbar" aria-label="Primary">
               <Link className="brand" href="/">
                 <span className="brand-mark" aria-hidden="true">
