@@ -1,5 +1,5 @@
 from datetime import datetime as dt
-from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File, Form
+from fastapi import APIRouter, Depends, status, Query, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import os
@@ -12,14 +12,51 @@ from ..schemas import (
     MessageResponse
 )
 from ..dependencies import get_current_active_user
+from ..errors import (
+    PolicyNotFoundError,
+    PolicyNotEligibleForClaimError,
+    InsufficientCoverageError,
+    ClaimNotFoundError
+)
+from ..services.storage_service import storage_service
 
 router = APIRouter(prefix="/claims", tags=["claims"])
 
-UPLOAD_DIR = "uploads/claim_proofs"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+def format_claim_response(claim: Claim) -> ClaimResponse:
+    proof = claim.proof
+    # If proof looks like a stored file path (basic heuristic), generate secure URL
+    if "/" in proof or "." in proof:
+        try:
+            proof = storage_service.generate_secure_url(proof)
+        except:
+            pass
+            
+    return ClaimResponse(
+        id=claim.id,
+        policy_id=claim.policy_id,
+        claimant_id=claim.claimant_id,
+        claim_amount=float(claim.claim_amount),
+        proof=proof,
+        timestamp=claim.timestamp,
+        approved=claim.approved,
+        created_at=claim.created_at,
+        updated_at=claim.updated_at
+    )
 
 
-@router.post("/", response_model=ClaimResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", 
+    response_model=ClaimResponse, 
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new claim (text proof)",
+    description="Submits a claim for a specific policy using text-based proof. The policy must be eligible for claims (e.g., within time bounds and not expired).",
+    responses={
+        201: {"description": "Claim submitted successfully"},
+        400: {"description": "Policy not eligible or invalid claim amount/proof"},
+        404: {"description": "Policy not found"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def create_claim(
     claim_data: ClaimCreateRequest,
     current_user: User = Depends(get_current_active_user),
@@ -31,24 +68,15 @@ async def create_claim(
     ).first()
 
     if policy is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Policy not found"
-        )
+        raise PolicyNotFoundError()
 
     current_time = int(dt.utcnow().timestamp())
 
     if not policy.can_claim(current_time):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Policy is not eligible for claims"
-        )
+        raise PolicyNotEligibleForClaimError()
 
     if claim_data.claim_amount > float(policy.remaining_coverage()):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Claim amount exceeds remaining coverage"
-        )
+        raise InsufficientCoverageError()
 
     claim = Claim(
         policy_id=claim_data.policy_id,
@@ -63,20 +91,22 @@ async def create_claim(
     db.commit()
     db.refresh(claim)
 
-    return ClaimResponse(
-        id=claim.id,
-        policy_id=claim.policy_id,
-        claimant_id=claim.claimant_id,
-        claim_amount=float(claim.claim_amount),
-        proof=claim.proof,
-        timestamp=claim.timestamp,
-        approved=claim.approved,
-        created_at=claim.created_at,
-        updated_at=claim.updated_at
-    )
+    return format_claim_response(claim)
 
 
-@router.post("/upload", response_model=ClaimResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/upload", 
+    response_model=ClaimResponse, 
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new claim (file upload proof)",
+    description="Submits a claim for a specific policy by uploading a proof document (image or PDF). The file is stored securely and a signed URL is generated for access.",
+    responses={
+        201: {"description": "Claim submitted with file upload successfully"},
+        400: {"description": "Policy not eligible or invalid file type/size"},
+        404: {"description": "Policy not found"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def create_claim_with_file(
     policy_id: int = Form(...),
     claim_amount: float = Form(..., gt=0),
@@ -90,39 +120,18 @@ async def create_claim_with_file(
     ).first()
 
     if policy is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Policy not found"
-        )
+        raise PolicyNotFoundError()
 
     current_time = int(dt.utcnow().timestamp())
 
     if not policy.can_claim(current_time):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Policy is not eligible for claims"
-        )
+        raise PolicyNotEligibleForClaimError()
 
     if claim_amount > float(policy.remaining_coverage()):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Claim amount exceeds remaining coverage"
-        )
+        raise InsufficientCoverageError()
 
-    allowed_content_types = ["image/jpeg", "image/png", "application/pdf"]
-    if file.content_type not in allowed_content_types:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File type not allowed. Allowed types: JPEG, PNG, PDF"
-        )
-
-    file_extension = file.filename.split(".")[-1] if "." in file.filename else "bin"
-    unique_filename = f"{uuid.uuid4()}.{file_extension}"
-    file_path = os.path.join(UPLOAD_DIR, unique_filename)
-
-    content = await file.read()
-    with open(file_path, "wb") as f:
-        f.write(content)
+    # Use StorageService for upload
+    file_path = await storage_service.upload_file(file, folder="claim_proofs")
 
     claim = Claim(
         policy_id=policy_id,
@@ -137,20 +146,20 @@ async def create_claim_with_file(
     db.commit()
     db.refresh(claim)
 
-    return ClaimResponse(
-        id=claim.id,
-        policy_id=claim.policy_id,
-        claimant_id=claim.claimant_id,
-        claim_amount=float(claim.claim_amount),
-        proof=claim.proof,
-        timestamp=claim.timestamp,
-        approved=claim.approved,
-        created_at=claim.created_at,
-        updated_at=claim.updated_at
-    )
+    return format_claim_response(claim)
 
 
-@router.get("/{claim_id}", response_model=ClaimResponse)
+@router.get(
+    "/{claim_id}", 
+    response_model=ClaimResponse,
+    summary="Get claim details",
+    description="Returns detailed information about a specific claim, including a secure link to the proof document if applicable.",
+    responses={
+        200: {"description": "Claim details found"},
+        404: {"description": "Claim not found"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def get_claim(
     claim_id: int,
     current_user: User = Depends(get_current_active_user),
@@ -162,25 +171,21 @@ async def get_claim(
     ).first()
 
     if claim is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Claim not found"
-        )
+        raise ClaimNotFoundError()
 
-    return ClaimResponse(
-        id=claim.id,
-        policy_id=claim.policy_id,
-        claimant_id=claim.claimant_id,
-        claim_amount=float(claim.claim_amount),
-        proof=claim.proof,
-        timestamp=claim.timestamp,
-        approved=claim.approved,
-        created_at=claim.created_at,
-        updated_at=claim.updated_at
-    )
+    return format_claim_response(claim)
 
 
-@router.get("/", response_model=dict)
+@router.get(
+    "/", 
+    response_model=dict,
+    summary="List user claims",
+    description="Returns a paginated list of claims submitted by the authenticated user. Can be filtered by policy ID and approval status.",
+    responses={
+        200: {"description": "Paginated list of claims"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def list_claims(
     policy_id: Optional[int] = Query(None, description="Filter by policy ID"),
     approved: Optional[bool] = Query(None, description="Filter by approval status"),
@@ -226,7 +231,17 @@ async def list_claims(
     }
 
 
-@router.patch("/{claim_id}", response_model=ClaimResponse)
+@router.patch(
+    "/{claim_id}", 
+    response_model=ClaimResponse,
+    summary="Update claim status (Mock/Admin)",
+    description="Updates the approval status of a claim. (Note: In a production environment, this would be handled by an Oracle or Admin process).",
+    responses={
+        200: {"description": "Claim status updated"},
+        404: {"description": "Claim not found"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def update_claim_status(
     claim_id: int,
     approved: bool = Query(..., description="Approval status"),
@@ -239,10 +254,7 @@ async def update_claim_status(
     ).first()
 
     if claim is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Claim not found"
-        )
+        raise ClaimNotFoundError()
 
     claim.approved = approved
 
@@ -257,20 +269,20 @@ async def update_claim_status(
     db.commit()
     db.refresh(claim)
 
-    return ClaimResponse(
-        id=claim.id,
-        policy_id=claim.policy_id,
-        claimant_id=claim.claimant_id,
-        claim_amount=float(claim.claim_amount),
-        proof=claim.proof,
-        timestamp=claim.timestamp,
-        approved=claim.approved,
-        created_at=claim.created_at,
-        updated_at=claim.updated_at
-    )
+    return format_claim_response(claim)
 
 
-@router.get("/policy/{policy_id}", response_model=dict)
+@router.get(
+    "/policy/{policy_id}", 
+    response_model=dict,
+    summary="List claims for a policy",
+    description="Returns all claims associated with a specific policy belonging to the authenticated user.",
+    responses={
+        200: {"description": "List of claims for the policy"},
+        404: {"description": "Policy not found"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def list_claims_by_policy(
     policy_id: int,
     page: int = Query(1, ge=1, description="Page number"),
@@ -284,10 +296,7 @@ async def list_claims_by_policy(
     ).first()
 
     if policy is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Policy not found"
-        )
+        raise PolicyNotFoundError()
 
     query = db.query(Claim).filter(Claim.policy_id == policy_id)
 

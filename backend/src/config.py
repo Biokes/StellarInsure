@@ -26,6 +26,13 @@ class Settings(BaseSettings):
     db_pool_pre_ping: bool = True
     db_echo: bool = False
 
+    # Storage settings
+    storage_type: str = "local"
+    upload_dir: str = "uploads"
+    max_upload_size: int = 10 * 1024 * 1024  # 10MB
+    storage_secret_key: str = "storage-secret-key-change-in-production"
+    base_url: str = "http://localhost:8000"
+
     @property
     def allowed_origins(self) -> List[str]:
         if self.environment == "production":

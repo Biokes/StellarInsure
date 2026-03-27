@@ -1,3 +1,2 @@
-from .stellar_service import StellarService, get_stellar_service, stellar_service, StellarContractError
-
-__all__ = ["StellarService", "get_stellar_service", "stellar_service", "StellarContractError"]
+# This file is intentionally empty to allow importing services individually
+# and avoid loading broken dependencies during testing.

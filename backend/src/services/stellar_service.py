@@ -6,21 +6,8 @@ import json
 import base64
 from typing import Optional, Dict, Any, List, Callable
 from datetime import datetime
-from stellar_sdk import (
-    Server,
-    Keypair,
-    TransactionBuilder,
-    Network,
-    Asset,
-    Operation,
-    SorobanDataBuilder,
-    Address,
-    InvokeHostFunction,
-    StrKey,
-    MuxedAccount,
-    xdr as stellar_xdr
-)
-from stellar_sdk.soroban_rpc import SorobanServer
+from stellar_sdk import SorobanServer
+from stellar_sdk import Keypair, Server, TransactionBuilder, Network, Asset, Operation, SorobanDataBuilder, Address, InvokeHostFunction, StrKey, MuxedAccount, xdr as stellar_xdr
 from stellar_sdk.soroban_types import Ed25519PublicKey
 from stellar_sdk.exceptions import (
     BadRequestError,

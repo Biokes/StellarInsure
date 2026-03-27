@@ -14,6 +14,12 @@ from ..schemas import (
     MessageResponse
 )
 from ..dependencies import get_current_active_user
+from ..errors import (
+    InvalidSignatureError,
+    UserAlreadyExistsError,
+    TokenExpiredError,
+    UserNotFoundError
+)
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -41,16 +47,22 @@ def get_or_create_user(db: Session, stellar_address: str) -> User:
     return user
 
 
-@router.post("/login", response_model=TokenResponse)
+@router.post(
+    "/login", 
+    response_model=TokenResponse,
+    summary="Login with Stellar wallet",
+    description="Authenticates a user by verifying a cryptographic signature from their Stellar wallet. If the user doesn't exist, they will be registered automatically.",
+    responses={
+        200: {"description": "Successful login, returns JWT tokens"},
+        401: {"description": "Invalid wallet signature or malformed request"},
+    }
+)
 async def login_with_wallet(
     request: WalletSignatureRequest,
     db: Session = Depends(get_db)
 ):
     if not verify_stellar_signature(request.stellar_address, request.signature, request.message):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid wallet signature"
-        )
+        raise InvalidSignatureError()
     
     user = get_or_create_user(db, request.stellar_address)
     
@@ -64,7 +76,17 @@ async def login_with_wallet(
     )
 
 
-@router.post("/register", response_model=TokenResponse)
+@router.post(
+    "/register", 
+    response_model=TokenResponse,
+    summary="Register a new user",
+    description="Creates a new user record associated with a Stellar public address. Requires a valid wallet signature.",
+    responses={
+        201: {"description": "User created successfully"},
+        400: {"description": "User already exists"},
+        401: {"description": "Invalid signature"},
+    }
+)
 async def register_with_wallet(
     request: WalletSignatureRequest,
     db: Session = Depends(get_db)
@@ -74,16 +96,10 @@ async def register_with_wallet(
     ).first()
     
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User already exists. Please login instead."
-        )
+        raise UserAlreadyExistsError("A user with this Stellar address is already registered.")
     
     if not verify_stellar_signature(request.stellar_address, request.signature, request.message):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid wallet signature"
-        )
+        raise InvalidSignatureError()
     
     user = User(stellar_address=request.stellar_address)
     db.add(user)
@@ -100,7 +116,16 @@ async def register_with_wallet(
     )
 
 
-@router.post("/refresh", response_model=TokenResponse)
+@router.post(
+    "/refresh", 
+    response_model=TokenResponse,
+    summary="Refresh access token",
+    description="Generates a new pair of access and refresh tokens using a valid refresh token.",
+    responses={
+        200: {"description": "New tokens generated"},
+        401: {"description": "Invalid or expired refresh token"},
+    }
+)
 async def refresh_token(
     request: RefreshTokenRequest,
     db: Session = Depends(get_db)
@@ -108,20 +133,14 @@ async def refresh_token(
     payload = verify_token(request.refresh_token, token_type="refresh")
     
     if payload is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
-        )
+        raise TokenExpiredError("Invalid or expired refresh token")
     
     user_id = payload.get("sub")
     stellar_address = payload.get("stellar_address")
     
     user = db.query(User).filter(User.id == int(user_id)).first()
     if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found"
-        )
+        raise UserNotFoundError()
     
     tokens = create_tokens(user.id, user.stellar_address)
     
@@ -133,7 +152,16 @@ async def refresh_token(
     )
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get(
+    "/me", 
+    response_model=UserResponse,
+    summary="Get current user profile",
+    description="Returns information about the currently authenticated user.",
+    responses={
+        200: {"description": "User profile data"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def get_current_user_info(
     current_user: User = Depends(get_current_active_user)
 ):
@@ -146,7 +174,17 @@ async def get_current_user_info(
     )
 
 
-@router.patch("/me", response_model=UserResponse)
+@router.patch(
+    "/me", 
+    response_model=UserResponse,
+    summary="Update user profile",
+    description="Updates the profile information (e.g., email) for the currently authenticated user.",
+    responses={
+        200: {"description": "Updated user profile"},
+        400: {"description": "Email already in use or invalid data"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def update_current_user(
     update_data: UserUpdateRequest,
     current_user: User = Depends(get_current_active_user),
@@ -159,10 +197,7 @@ async def update_current_user(
         ).first()
         
         if existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Email already in use"
-            )
+            raise UserAlreadyExistsError("This email address is already associated with another account.")
         
         current_user.email = update_data.email
         db.commit()
@@ -177,7 +212,16 @@ async def update_current_user(
     )
 
 
-@router.post("/logout", response_model=MessageResponse)
+@router.post(
+    "/logout", 
+    response_model=MessageResponse,
+    summary="Logout user",
+    description="Invalidates the current session (client-side only for now, tokens are stateless).",
+    responses={
+        200: {"description": "Logout successful"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def logout(
     current_user: User = Depends(get_current_active_user)
 ):

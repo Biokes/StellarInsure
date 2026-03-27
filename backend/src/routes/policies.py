@@ -13,21 +13,34 @@ from ..schemas import (
     MessageResponse
 )
 from ..dependencies import get_current_active_user
+from ..errors import (
+    PolicyNotFoundError,
+    InvalidPolicyTimeRangeError,
+    PolicyNotEligibleForClaimError
+)
 
 router = APIRouter(prefix="/policies", tags=["policies"])
 
 
-@router.post("/", response_model=PolicyResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", 
+    response_model=PolicyResponse, 
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a new insurance policy",
+    description="Creates a new parametric insurance policy for the authenticated user. Payouts will be automated based on the trigger condition.",
+    responses={
+        201: {"description": "Policy created successfully"},
+        400: {"description": "Invalid policy data or invalid time range"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def create_policy(
     policy_data: PolicyCreateRequest,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     if policy_data.end_time <= policy_data.start_time:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="End time must be greater than start time"
-        )
+        raise InvalidPolicyTimeRangeError()
     
     policy = Policy(
         policyholder_id=current_user.id,
@@ -60,7 +73,16 @@ async def create_policy(
     )
 
 
-@router.get("/", response_model=PolicyListResponse)
+@router.get(
+    "/", 
+    response_model=PolicyListResponse,
+    summary="List user policies",
+    description="Returns a paginated list of insurance policies belonging to the authenticated user, with optional filtering by status and type.",
+    responses={
+        200: {"description": "Paginated list of policies"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def get_user_policies(
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(10, ge=1, le=100, description="Items per page"),
@@ -109,7 +131,17 @@ async def get_user_policies(
     )
 
 
-@router.get("/{policy_id}", response_model=PolicyResponse)
+@router.get(
+    "/{policy_id}", 
+    response_model=PolicyResponse,
+    summary="Get policy details",
+    description="Returns detailed information about a specific insurance policy by its ID.",
+    responses={
+        200: {"description": "Policy details found"},
+        404: {"description": "Policy not found"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def get_policy(
     policy_id: int,
     current_user: User = Depends(get_current_active_user),
@@ -121,10 +153,7 @@ async def get_policy(
     ).first()
     
     if policy is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Policy not found"
-        )
+        raise PolicyNotFoundError()
     
     return PolicyResponse(
         id=policy.id,
@@ -142,7 +171,17 @@ async def get_policy(
     )
 
 
-@router.delete("/{policy_id}", response_model=MessageResponse)
+@router.delete(
+    "/{policy_id}", 
+    response_model=MessageResponse,
+    summary="Cancel a policy",
+    description="Marks a policy as cancelled. Only policies belonging to the authenticated user can be cancelled.",
+    responses={
+        200: {"description": "Policy cancelled successfully"},
+        404: {"description": "Policy not found"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def cancel_policy(
     policy_id: int,
     current_user: User = Depends(get_current_active_user),
@@ -154,10 +193,7 @@ async def cancel_policy(
     ).first()
     
     if policy is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Policy not found"
-        )
+        raise PolicyNotFoundError()
     
     policy.status = PolicyStatus.cancelled
     db.commit()
@@ -165,7 +201,19 @@ async def cancel_policy(
     return MessageResponse(message="Policy cancelled successfully")
 
 
-@router.post("/{policy_id}/claims", response_model=ClaimResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/{policy_id}/claims", 
+    response_model=ClaimResponse, 
+    status_code=status.HTTP_201_CREATED,
+    summary="Submit a claim",
+    description="Submits a claim for a specific policy. The claim must be supported by proof and the policy must be eligible for claims (e.g., within time bounds).",
+    responses={
+        201: {"description": "Claim submitted successfully"},
+        400: {"description": "Policy not eligible or invalid claim amount/proof"},
+        404: {"description": "Policy not found"},
+        401: {"description": "Not authenticated"},
+    }
+)
 async def submit_claim(
     policy_id: int,
     claim_data: ClaimCreateRequest,
@@ -180,18 +228,12 @@ async def submit_claim(
     ).first()
     
     if policy is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Policy not found"
-        )
+        raise PolicyNotFoundError()
     
     current_time = int(dt.utcnow().timestamp())
     
     if not policy.can_claim(current_time):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Policy is not eligible for claims"
-        )
+        raise PolicyNotEligibleForClaimError()
     
     claim = Claim(
         policy_id=policy_id,

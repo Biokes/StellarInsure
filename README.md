@@ -13,6 +13,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Built on Stellar](https://img.shields.io/badge/Built%20on-Stellar%20Soroban-purple)](https://soroban.stellar.org)
+[![Backend Coverage](https://img.shields.io/badge/Backend%20Coverage-80%25-green)](#)
+[![Frontend Coverage](https://img.shields.io/badge/Frontend%20Coverage-80%25-green)](#)
+[![Contract Coverage](https://img.shields.io/badge/Contract%20Coverage-80%25-green)](#)
 
 ## The Problem
 
