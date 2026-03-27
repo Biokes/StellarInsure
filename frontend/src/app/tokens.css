@@ -1,0 +1,106 @@
+:root {
+  color-scheme: light;
+
+  /* Color primitives */
+  --color-sand-50: #fffdf8;
+  --color-sand-100: #f7f4ec;
+  --color-sand-200: #f5efe4;
+  --color-sand-300: #e6ddce;
+  --color-ink-900: #102542;
+  --color-ink-700: #334255;
+  --color-ink-500: #556274;
+  --color-ink-100: #d7dde6;
+  --color-sky-500: #1f7a8c;
+  --color-sky-100: #dbeef2;
+  --color-clay-500: #c05d33;
+  --color-clay-700: #8f3f21;
+  --color-clay-100: #f4dfd7;
+  --color-success-500: #1e8e3e;
+  --color-success-100: #e6f4ea;
+  --color-warning-500: #b06b00;
+  --color-warning-100: #fef7e0;
+  --color-danger-500: #b3261e;
+  --color-danger-100: #fce8e6;
+  --color-info-500: #1967d2;
+  --color-info-100: #e8f0fe;
+  --color-violet-100: #f3e8fd;
+  --color-violet-500: #7a32bf;
+  --color-teal-100: #e2f3f5;
+  --color-teal-500: #007b83;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Typography */
+  --font-family-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-family-display: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-family-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+  --font-size-0: 0.78rem;
+  --font-size-1: 0.95rem;
+  --font-size-2: 1rem;
+  --font-size-3: 1.15rem;
+  --font-size-4: clamp(1.35rem, 2vw, 1.55rem);
+  --font-size-5: clamp(1.7rem, 3vw, 2.1rem);
+  --font-size-6: clamp(2.4rem, 6vw, 4.4rem);
+  --line-height-body: 1.6;
+  --line-height-tight: 1.05;
+
+  /* Spacing */
+  --space-1: 0.4rem;
+  --space-2: 0.7rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+  --space-7: 4rem;
+
+  /* Radius */
+  --radius-sm: 1rem;
+  --radius-md: 1.5rem;
+  --radius-lg: 2rem;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --shadow-100: 0 12px 30px rgba(16, 37, 66, 0.08);
+  --shadow-200: 0 24px 60px rgba(16, 37, 66, 0.08);
+  --shadow-300: 0 40px 100px rgba(0, 0, 0, 0.2);
+
+  /* Motion */
+  --duration-fast: 180ms;
+  --duration-base: 260ms;
+  --duration-slow: 440ms;
+  --easing-standard: ease;
+
+  /* Semantic aliases */
+  --background: var(--color-sand-100);
+  --surface: var(--color-sand-50);
+  --surface-strong: var(--color-ink-900);
+  --card-border: rgba(16, 37, 66, 0.12);
+  --text: var(--color-ink-900);
+  --text-muted: var(--color-ink-500);
+  --accent: var(--color-clay-500);
+  --accent-strong: var(--color-clay-700);
+  --accent-soft: rgba(192, 93, 51, 0.12);
+  --focus: var(--color-sky-500);
+  --shadow: var(--shadow-200);
+  --surface-wash: rgba(255, 253, 248, 0.8);
+  --success-soft: var(--color-success-100);
+  --success-strong: var(--color-success-500);
+  --warning-soft: var(--color-warning-100);
+  --warning-strong: var(--color-warning-500);
+  --danger-soft: var(--color-danger-100);
+  --danger-strong: var(--color-danger-500);
+  --info-soft: var(--color-info-100);
+  --info-strong: var(--color-info-500);
+  --step--1: var(--font-size-0);
+  --step-0: var(--font-size-1);
+  --step-1: var(--font-size-2);
+  --step-2: var(--font-size-3);
+  --step-3: var(--font-size-4);
+  --step-4: var(--font-size-5);
+  --step-5: var(--font-size-6);
+}
+
+[dir="rtl"] {
+  --font-family-body: "IBM Plex Sans Arabic", "Segoe UI", sans-serif;
+  --font-family-display: "IBM Plex Sans Arabic", "Segoe UI", sans-serif;
+}

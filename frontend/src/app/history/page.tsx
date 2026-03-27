@@ -3,6 +3,8 @@
 import React, { startTransition, useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 
+import { Icon } from "@/components/icon";
+
 type TxType = "premium" | "payout" | "refund" | "all";
 type TxStatus = "successful" | "pending" | "failed" | "all";
 
@@ -17,7 +19,6 @@ interface Transaction {
   created_at: string;
 }
 
-// Mock transactions for demonstration
 const MOCK_TRANSACTIONS: Transaction[] = Array.from({ length: 38 }, (_, i) => {
   const types = ["premium", "payout", "refund", "premium", "premium", "payout"];
   const statuses = ["successful", "successful", "successful", "pending", "failed", "successful"];
@@ -32,6 +33,7 @@ const MOCK_TRANSACTIONS: Transaction[] = Array.from({ length: 38 }, (_, i) => {
   const amounts = [50.25, 1000.0, 200.5, 75.0, 150.75, 500.0];
   const idx = i % 6;
   const date = new Date(2026, 2, 27 - i * 2);
+
   return {
     id: i + 1,
     transaction_hash: hashes[idx].slice(0, 24) + i.toString().padStart(4, "0"),
@@ -58,7 +60,7 @@ function formatDate(iso: string): string {
 }
 
 function shortenHash(hash: string): string {
-  return `${hash.slice(0, 8)}…${hash.slice(-6)}`;
+  return `${hash.slice(0, 8)}...${hash.slice(-6)}`;
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -67,6 +69,7 @@ function StatusBadge({ status }: { status: string }) {
     pending: "tx-badge tx-badge--pending",
     failed: "tx-badge tx-badge--failed",
   };
+
   return (
     <span className={classMap[status] ?? "tx-badge"}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -80,6 +83,7 @@ function TypeBadge({ type }: { type: string }) {
     payout: "tx-badge tx-badge--payout",
     refund: "tx-badge tx-badge--refund",
   };
+
   return (
     <span className={classMap[type] ?? "tx-badge"}>
       {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -103,6 +107,7 @@ export default function TransactionHistoryPage() {
         deferredTypeFilter === "all" || tx.transaction_type === deferredTypeFilter;
       const matchStatus =
         deferredStatusFilter === "all" || tx.status === deferredStatusFilter;
+
       return matchType && matchStatus;
     });
   }, [deferredStatusFilter, deferredTypeFilter]);
@@ -144,10 +149,12 @@ export default function TransactionHistoryPage() {
       <div className="section-header">
         <span className="eyebrow">Transaction History</span>
         <h1 id="tx-history-title">Your On-Chain Activity</h1>
-        <p>View all your premium payments, claim payouts, and refunds with direct links to Stellar Explorer.</p>
+        <p>
+          View all your premium payments, claim payouts, and refunds with direct
+          links to Stellar Explorer.
+        </p>
       </div>
 
-      {/* Filters */}
       <div className="tx-filters motion-panel" role="search" aria-label="Filter transactions">
         <div className="tx-filter-group">
           <label htmlFor="type-filter" className="tx-filter-label">
@@ -191,10 +198,11 @@ export default function TransactionHistoryPage() {
         </p>
       </div>
 
-      {/* Table */}
       {paginated.length === 0 ? (
         <div className="tx-empty" role="status">
-          <span className="tx-empty-icon" aria-hidden="true">📭</span>
+          <span className="tx-empty-icon" aria-hidden="true">
+            <Icon name="document" size="lg" tone="muted" />
+          </span>
           <p>No transactions match your filters.</p>
         </div>
       ) : (
@@ -246,8 +254,10 @@ export default function TransactionHistoryPage() {
                         onClick={(e) => e.stopPropagation()}
                         aria-label={`View transaction ${shortenHash(tx.transaction_hash)} on Stellar Explorer`}
                       >
-                        {shortenHash(tx.transaction_hash)}
-                        <span className="tx-external-icon" aria-hidden="true">↗</span>
+                        <span>{shortenHash(tx.transaction_hash)}</span>
+                        <span className="tx-external-icon" aria-hidden="true">
+                          <Icon name="arrow-up-right" size="sm" tone="accent" />
+                        </span>
                       </a>
                     </td>
                     <td data-label="Details">
@@ -259,7 +269,11 @@ export default function TransactionHistoryPage() {
                           setExpandedId(expandedId === tx.id ? null : tx.id);
                         }}
                       >
-                        {expandedId === tx.id ? "▲" : "▼"}
+                        <Icon
+                          name={expandedId === tx.id ? "chevron-up" : "chevron-down"}
+                          size="sm"
+                          tone="muted"
+                        />
                       </button>
                     </td>
                   </tr>
@@ -302,9 +316,10 @@ export default function TransactionHistoryPage() {
                                 href={`${STELLAR_EXPLORER_BASE}${tx.transaction_hash}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="tx-detail-link"
+                                className="tx-detail-link tx-detail-link--with-icon"
                               >
-                                View on Stellar Expert ↗
+                                <span>View on Stellar Expert</span>
+                                <Icon name="arrow-up-right" size="sm" tone="accent" />
                               </a>
                             </div>
                           </div>
@@ -319,7 +334,6 @@ export default function TransactionHistoryPage() {
         </div>
       )}
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <nav className="tx-pagination" aria-label="Transaction history pagination">
           <button
@@ -328,21 +342,21 @@ export default function TransactionHistoryPage() {
             disabled={page === 1}
             aria-label="Previous page"
           >
-            ← Prev
+            Prev
           </button>
 
           <div className="tx-page-numbers" role="list">
             {Array.from({ length: totalPages }, (_, i) => i + 1)
               .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
-              .reduce<(number | "…")[]>((acc, p, idx, arr) => {
-                if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("…");
+              .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+                if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
                 acc.push(p);
                 return acc;
               }, [])
               .map((p, i) =>
-                p === "…" ? (
+                p === "..." ? (
                   <span key={`ellipsis-${i}`} className="tx-page-ellipsis" aria-hidden="true">
-                    …
+                    ...
                   </span>
                 ) : (
                   <button
@@ -355,7 +369,7 @@ export default function TransactionHistoryPage() {
                   >
                     {p}
                   </button>
-                )
+                ),
               )}
           </div>
 
@@ -365,13 +379,14 @@ export default function TransactionHistoryPage() {
             disabled={page === totalPages}
             aria-label="Next page"
           >
-            Next →
+            Next
           </button>
         </nav>
       )}
 
       <p className="tx-pagination-info" aria-live="polite">
-        Showing {Math.min((page - 1) * PER_PAGE + 1, total)}–{Math.min(page * PER_PAGE, total)} of {total}
+        Showing {Math.min((page - 1) * PER_PAGE + 1, total)}-
+        {Math.min(page * PER_PAGE, total)} of {total}
       </p>
     </main>
   );

@@ -74,6 +74,16 @@ const en = {
     arabic: "Arabic",
     switched: "Language updated to English.",
   },
+  maintenance: {
+    badge: "Maintenance notice",
+    regionLabel: "Platform maintenance notice",
+    windowLabel: "Downtime window",
+    windowFallback: "Downtime window will be confirmed soon.",
+    status: {
+      active: "Maintenance is currently active",
+      scheduled: "Maintenance is scheduled",
+    },
+  },
 } as const;
 
 export default en;

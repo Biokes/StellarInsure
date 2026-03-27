@@ -3,6 +3,8 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 
+import { Icon } from "@/components/icon";
+
 type PolicyStatus = "Active" | "Claim Pending" | "Claim Approved";
 type ClaimStatus = "Approved" | "Pending";
 type ContactChannel = "email" | "sms";
@@ -244,6 +246,9 @@ export default function PolicyDetailPage({
       <main id="main-content" className="policy-page">
         <section className="policy-shell policy-shell--loading" aria-busy="true">
           <span className="eyebrow">Policy Detail</span>
+          <span className="state-icon" aria-hidden="true">
+            <Icon name="clock" size="lg" tone="muted" />
+          </span>
           <h1>Loading policy snapshot</h1>
           <p className="state-copy">
             Pulling the latest policy summary, claim activity, and print metadata.
@@ -258,6 +263,9 @@ export default function PolicyDetailPage({
       <main id="main-content" className="policy-page">
         <section className="policy-shell state-card" role="alert">
           <span className="eyebrow">Policy Detail</span>
+          <span className="state-icon" aria-hidden="true">
+            <Icon name="alert" size="lg" tone="warning" />
+          </span>
           <h1>Policy data is temporarily unavailable</h1>
           <p className="state-copy">
             The latest claim export could not be prepared. Try again from history or open a
@@ -281,6 +289,9 @@ export default function PolicyDetailPage({
       <main id="main-content" className="policy-page">
         <section className="policy-shell state-card">
           <span className="eyebrow">Policy Detail</span>
+          <span className="state-icon" aria-hidden="true">
+            <Icon name="document" size="lg" tone="muted" />
+          </span>
           <h1>Policy not found</h1>
           <p className="state-copy">
             This preview does not exist in the current frontend dataset. Open a sample policy to
@@ -326,7 +337,10 @@ export default function PolicyDetailPage({
             <div className="policy-summary__header">
               <div>
                 <p className="metadata-label">Policy reference</p>
-                <h2 id={summaryId}>{currentPolicy.id}</h2>
+                <div className="policy-summary__title">
+                  <Icon name="shield" size="md" tone="accent" />
+                  <h2 id={summaryId}>{currentPolicy.id}</h2>
+                </div>
               </div>
               <span className={statusClassName(currentPolicy.status)}>{currentPolicy.status}</span>
             </div>
@@ -371,7 +385,10 @@ export default function PolicyDetailPage({
 
           <aside className="panel motion-panel" aria-labelledby={assistId}>
             <p className="metadata-label">Print note</p>
-            <h2 id={assistId}>Export summary</h2>
+            <div className="panel-heading">
+              <Icon name="document" size="md" tone="accent" />
+              <h2 id={assistId}>Export summary</h2>
+            </div>
             <p>{currentPolicy.note}</p>
             <ul className="policy-checklist">
               <li>Optimized for A4 and letter print layouts.</li>
@@ -390,6 +407,9 @@ export default function PolicyDetailPage({
 
           {currentPolicy.claims.length === 0 ? (
             <div className="state-card state-card--soft" role="status">
+              <span className="state-icon" aria-hidden="true">
+                <Icon name="clock" size="lg" tone="muted" />
+              </span>
               <h3>No claims filed yet</h3>
               <p className="state-copy">
                 This policy is active and ready for automated review, but there are no claim
