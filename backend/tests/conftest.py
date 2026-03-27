@@ -11,6 +11,9 @@ os.environ["ENVIRONMENT"] = "test"
 os.environ["DATABASE_URL"] = "sqlite://"
 os.environ["JWT_SECRET_KEY"] = "test-secret-key"
 os.environ["REDIS_ENABLED"] = "false"
+# Raise rate limits so the integration test suite doesn't trip the limiter
+os.environ["RATE_LIMIT_DEFAULT"] = "10000/minute"
+os.environ["RATE_LIMIT_AUTH"] = "1000/minute"
 
 from src.auth import create_access_token, create_refresh_token
 from src.database import get_db
