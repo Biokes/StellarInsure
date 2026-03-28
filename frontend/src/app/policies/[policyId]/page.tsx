@@ -3,6 +3,7 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 
+import { AmountInput, formatAssetAmount, parseAmountInput } from "@/components/amount-input";
 import { Icon } from "@/components/icon";
 import { Skeleton, SkeletonText } from "@/components/skeleton";
 import { TransactionModal } from "@/components/transaction-modal";
@@ -97,13 +98,6 @@ const POLICY_RECORDS: Record<string, PolicyRecord | "error"> = {
   "sync-check": "error",
 };
 
-function formatCurrency(amount: number) {
-  return amount.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
-
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", {
     year: "numeric",
@@ -195,7 +189,7 @@ export default function PolicyDetailPage({
 
   function validateForm(policy: PolicyRecord): FormErrors {
     const errors: FormErrors = {};
-    const amount = Number(formState.amount);
+    const amount = parseAmountInput(formState.amount);
 
     if (formState.fullName.trim().length < 2) {
       errors.fullName = "Enter the contact name you want support to reference.";
@@ -209,7 +203,7 @@ export default function PolicyDetailPage({
       errors.phone = "Enter a phone number that support can use on mobile.";
     }
 
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (amount === null || amount <= 0) {
       errors.amount = "Enter a valid payout review amount.";
     } else if (amount > policy.coverageAmount) {
       errors.amount = "Requested review amount cannot exceed the policy coverage.";
@@ -397,11 +391,11 @@ export default function PolicyDetailPage({
             <dl className="definition-grid">
               <div>
                 <dt>Coverage</dt>
-                <dd>{formatCurrency(currentPolicy.coverageAmount)} XLM</dd>
+                <dd>{formatAssetAmount(currentPolicy.coverageAmount)} XLM</dd>
               </div>
               <div>
                 <dt>Premium</dt>
-                <dd>{formatCurrency(currentPolicy.premium)} XLM</dd>
+                <dd>{formatAssetAmount(currentPolicy.premium)} XLM</dd>
               </div>
               <div>
                 <dt>Type</dt>
@@ -483,7 +477,7 @@ export default function PolicyDetailPage({
                     </div>
                     <div>
                       <dt>Requested amount</dt>
-                      <dd>{formatCurrency(claim.amount)} XLM</dd>
+                      <dd>{formatAssetAmount(claim.amount)} XLM</dd>
                     </div>
                     <div>
                       <dt>Evidence bundle</dt>
@@ -572,21 +566,17 @@ export default function PolicyDetailPage({
 
               <label className="field">
                 <span className="field__label">Review amount</span>
-                <input
+                <AmountInput
                   ref={amountRef}
                   className="field__input"
                   name="amount"
-                  inputMode="decimal"
-                  min="0"
-                  step="0.01"
-                  type="number"
                   value={formState.amount}
-                  onChange={(event) => setField("amount", event.target.value)}
+                  onChange={(value) => setField("amount", value)}
                   aria-invalid={Boolean(formErrors.amount)}
                   aria-describedby={formErrors.amount ? "amount-error" : "amount-hint"}
                 />
                 <span id="amount-hint" className="field__hint">
-                  Maximum review amount: {formatCurrency(currentPolicy.coverageAmount)} XLM
+                  Maximum review amount: {formatAssetAmount(currentPolicy.coverageAmount)} XLM
                 </span>
                 {formErrors.amount ? (
                   <span id="amount-error" className="field__error">

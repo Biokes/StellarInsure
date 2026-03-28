@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
+import { AmountInput, formatAssetAmount, parseAmountInput } from "@/components/amount-input";
 import { Icon } from "@/components/icon";
 import { PolicyTypeSelector, type PolicyType } from "@/components/policy-type-selector";
 import { TransactionTimeline, DEFAULT_TX_STEPS, type TimelineStep } from "@/components/transaction-timeline";
@@ -32,6 +33,8 @@ const STEP_LABELS = [
   "Review",
   "Submit",
 ];
+
+const MAX_COVERAGE_AMOUNT = 1_000_000;
 
 function StepIndicator({ current }: { current: CreateStep }) {
   return (
@@ -73,6 +76,7 @@ export default function CreatePolicyPage() {
     return 0;
   });
   const [txSteps, setTxSteps] = useState<TimelineStep[]>(DEFAULT_TX_STEPS);
+  const [coverageTouched, setCoverageTouched] = useState(false);
 
   function updateDraft<K extends keyof PolicyDraft>(field: K, value: PolicyDraft[K]) {
     setDraft({ ...draft, [field]: value });
@@ -84,6 +88,12 @@ export default function CreatePolicyPage() {
   }
 
   function handleConfigureNext() {
+    setCoverageTouched(true);
+
+    if (!isConfigValid) {
+      return;
+    }
+
     setStep(2);
   }
 
@@ -125,8 +135,18 @@ export default function CreatePolicyPage() {
     }, 3600);
   }
 
+  const parsedCoverageAmount = parseAmountInput(draft.coverageAmount);
+  const coverageError =
+    draft.coverageAmount.trim() === ""
+      ? "Enter a coverage amount to continue."
+      : parsedCoverageAmount === null || parsedCoverageAmount <= 0
+        ? "Enter a valid coverage amount in XLM."
+        : parsedCoverageAmount > MAX_COVERAGE_AMOUNT
+          ? `Coverage amount cannot exceed ${formatAssetAmount(MAX_COVERAGE_AMOUNT)} XLM.`
+          : undefined;
+
   const isConfigValid =
-    draft.coverageAmount.trim() !== "" &&
+    coverageError === undefined &&
     draft.triggerCondition.trim() !== "" &&
     draft.premium.trim() !== "" &&
     draft.duration.trim() !== "";
@@ -164,17 +184,23 @@ export default function CreatePolicyPage() {
           <div className="form-grid">
             <label className="field">
               <span className="field__label">Coverage Amount (XLM)</span>
-              <input
+              <AmountInput
                 className="field__input"
-                type="number"
-                inputMode="decimal"
-                min="0"
-                step="0.01"
-                placeholder="e.g. 5000"
+                aria-invalid={Boolean(coverageError) && coverageTouched}
+                aria-describedby={coverageError && coverageTouched ? "coverage-error" : "coverage-hint"}
+                placeholder="e.g. 5,000.00"
                 value={draft.coverageAmount}
-                onChange={(e) => updateDraft("coverageAmount", e.target.value)}
+                onChange={(value) => updateDraft("coverageAmount", value)}
+                onBlur={() => setCoverageTouched(true)}
               />
-              <span className="field__hint">Maximum payout if the trigger condition is met.</span>
+              <span id="coverage-hint" className="field__hint">
+                Maximum payout if the trigger condition is met. Limit: {formatAssetAmount(MAX_COVERAGE_AMOUNT)} XLM.
+              </span>
+              {coverageError && coverageTouched ? (
+                <span id="coverage-error" className="field__error">
+                  {coverageError}
+                </span>
+              ) : null}
             </label>
 
             <label className="field">
@@ -252,7 +278,7 @@ export default function CreatePolicyPage() {
               </div>
               <div>
                 <dt>Coverage</dt>
-                <dd>{draft.coverageAmount} XLM</dd>
+                <dd>{parsedCoverageAmount !== null ? formatAssetAmount(parsedCoverageAmount) : draft.coverageAmount} XLM</dd>
               </div>
               <div>
                 <dt>Premium</dt>
