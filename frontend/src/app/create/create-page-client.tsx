@@ -18,6 +18,9 @@ import {
 } from "@/components/transaction-timeline";
 import { useWallet } from "@/components/wallet-provider";
 import { useAutosave } from "@/hooks/use-autosave";
+import { TriggerConditionBuilder } from "@/components/trigger-condition-builder";
+import { PremiumEstimate, type PremiumBreakdown } from "@/components/premium-estimate";
+import { ValidationSummary, type ValidationError } from "@/components/validation-summary";
 
 type CreateStep = 0 | 1 | 2 | 3;
 
@@ -316,6 +319,9 @@ export default function CreatePolicyPageClient() {
   const [oracleProviders, setOracleProviders] = useState<OracleProvider[]>([]);
   const [oracleReloadCounter, setOracleReloadCounter] = useState(0);
   const [receipt, setReceipt] = useState<ReceiptData | null>(null);
+  const [isEstimating, setIsEstimating] = useState(false);
+  const [estimationError, setEstimationError] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const { isConnected, message: walletMessage, status: walletStatus } = useWallet();
 
   function updateDraft<K extends keyof PolicyDraft>(field: K, value: PolicyDraft[K]) {
@@ -369,7 +375,19 @@ export default function CreatePolicyPageClient() {
   function handleConfigureNext() {
     setCoverageTouched(true);
 
-    if (!isConfigValid) {
+    const errors: ValidationError[] = [];
+    if (coverageError) errors.push({ id: "coverage-input", field: "Coverage", message: coverageError });
+    if (draft.triggerCondition.trim() === "")
+      errors.push({ id: "trigger-input", field: "Trigger", message: "Trigger condition is required." });
+    if (draft.premium.trim() === "") errors.push({ id: "premium-input", field: "Premium", message: "Premium is required." });
+    if (draft.duration.trim() === "") errors.push({ id: "duration-input", field: "Duration", message: "Duration is required." });
+    if (oracleState !== "ready" || draft.oracleProvider.trim() === "")
+      errors.push({ id: "oracle-selector", field: "Oracle", message: "Please select an oracle provider." });
+
+    setValidationErrors(errors);
+
+    if (errors.length > 0) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -460,17 +478,12 @@ export default function CreatePolicyPageClient() {
   const isWalletReady = isConnected && walletStatus !== "checking" && walletStatus !== "connecting";
 
   return (
-    <main id="main-content" className="create-page">
-      <div className="section-header">
-        <span className="eyebrow">New Policy</span>
-        <h1>Create a Policy</h1>
-        <p>
-          Configure your parametric insurance policy step by step. Your progress is saved
-          automatically and will be restored if you leave and return.
         </p>
       </div>
 
       <StepIndicator current={step} />
+
+      {step === 1 && <ValidationSummary errors={validationErrors} />}
 
       {step === 0 && (
         <section className="create-section motion-panel" aria-labelledby="step-type-title">
@@ -511,7 +524,7 @@ export default function CreatePolicyPageClient() {
               ) : null}
             </label>
 
-            <label className="field">
+            <div className="field" id="premium-input">
               <span className="field__label">Premium (XLM)</span>
               <input
                 className="field__input"
@@ -524,21 +537,35 @@ export default function CreatePolicyPageClient() {
                 onChange={(event) => updateDraft("premium", event.target.value)}
               />
               <span className="field__hint">One-time payment to activate the policy.</span>
-            </label>
+              
+              <div style={{ marginTop: "var(--space-4)" }}>
+                <PremiumEstimate
+                  isLoading={isEstimating}
+                  isError={estimationError}
+                  totalAmount={draft.premium || "0.00"}
+                  currency="XLM"
+                  breakdown={[
+                    { label: "Base Rate", amount: (Number(draft.premium) * 0.85).toFixed(2), unit: "XLM", tooltip: "Core insurance risk premium" },
+                    { label: "Oracle Fee", amount: (Number(draft.premium) * 0.10).toFixed(2), unit: "XLM", tooltip: "Data feed and verification cost" },
+                    { label: "Protocol Fee", amount: (Number(draft.premium) * 0.05).toFixed(2), unit: "XLM", tooltip: "StellarInsure maintenance" }
+                  ]}
+                  onRecalculate={() => {
+                    setIsEstimating(true);
+                    setTimeout(() => setIsEstimating(false), 1200);
+                  }}
+                />
+              </div>
+            </div>
 
-            <label className="field field--full">
-              <span className="field__label">Trigger Condition</span>
-              <textarea
-                className="field__input field__input--textarea"
-                rows={3}
-                placeholder="Describe the condition that triggers the payout"
-                value={draft.triggerCondition}
-                onChange={(event) => updateDraft("triggerCondition", event.target.value)}
+            <div className="field field--full" id="trigger-input">
+              <span className="field__label">Trigger Condition Builder</span>
+              <TriggerConditionBuilder 
+                onChange={(val) => updateDraft("triggerCondition", val)}
               />
               <span className="field__hint">
-                The selected oracle provider evaluates this condition automatically.
+                Build rules using logical operators. The condition evaluates in real-time.
               </span>
-            </label>
+            </div>
 
             <label className="field">
               <span className="field__label">Duration (days)</span>

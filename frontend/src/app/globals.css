@@ -2023,3 +2023,218 @@ dt,
     white-space: nowrap;
   }
 }
+
+/* ── Trigger Condition Builder ─────────────────────────────────────────── */
+
+.condition-builder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.condition-builder__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.condition-rule {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+
+.condition-rule__inputs {
+  display: grid;
+  grid-template-columns: 1.5fr 0.8fr 1fr;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.tx-select--operator {
+  font-family: var(--font-family-display);
+  font-weight: 700;
+  text-align: center;
+}
+
+.condition-rule__remove {
+  background: var(--warning-soft);
+  color: var(--warning-strong);
+  flex-shrink: 0;
+}
+
+.condition-builder__add {
+  align-self: flex-start;
+  gap: var(--space-2);
+}
+
+.condition-preview {
+  padding: var(--space-4);
+  background: var(--surface-strong);
+  color: #fff;
+  border-radius: var(--radius-md);
+}
+
+.condition-preview__code {
+  display: block;
+  margin-top: var(--space-2);
+  font-family: inherit;
+  font-size: var(--step-1);
+  font-weight: 600;
+  color: var(--accent-light);
+}
+
+/* ── Premium Estimate ──────────────────────────────────────────────────── */
+
+.premium-estimate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--surface-raised);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  transition: opacity 0.2s ease;
+}
+
+.premium-estimate--loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.premium-estimate__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.premium-estimate__total {
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.premium-estimate__total-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.premium-estimate__total-value strong {
+  font-size: var(--step-4);
+  color: var(--text);
+}
+
+.premium-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.premium-breakdown__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px dashed var(--card-border);
+}
+
+.premium-breakdown__row dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--step--1);
+  text-transform: none;
+}
+
+.premium-breakdown__row dd {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.premium-estimate__disclaimer {
+  font-size: var(--step--1);
+  font-style: italic;
+  margin: 0;
+}
+
+.premium-estimate__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--danger-soft);
+  color: var(--danger-strong);
+  border-radius: var(--radius-md);
+}
+
+/* ── Validation Summary ────────────────────────────────────────────────── */
+
+.validation-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--warning-soft);
+  border-left: 4px solid var(--warning-strong);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-5);
+}
+
+.validation-summary__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.validation-summary__header h3 {
+  font-size: var(--step-1);
+  margin: 0;
+  color: var(--warning-strong);
+}
+
+.validation-summary__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.validation-summary__link {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.validation-summary__link:hover {
+  text-decoration: underline;
+  color: var(--text-strong);
+}
+
+.validation-summary__link span {
+  font-weight: 700;
+  color: var(--warning-strong);
+}
+
+.validation-summary__hint {
+  font-size: var(--step--1);
+  color: var(--warning-strong);
+  opacity: 0.8;
+  margin: 0;
+}
