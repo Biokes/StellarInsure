@@ -73,17 +73,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ErrorBoundary>
-          <LanguageProvider>
-            <WalletProvider>
-              <StructuredData data={organizationStructuredData()} />
-              <StructuredData data={websiteStructuredData()} />
-              <OnboardingFlow />
-              <a className="skip-link" href="#main-content">
-                Skip to main content
-              </a>
-              <div className="page-shell">
-                <MaintenanceBanner />
+        <LanguageProvider>
+          <WalletProvider>
+            <script defer data-domain="stellarinsure.io" src="https://plausible.io/js/script.js"></script>
+            <StructuredData data={organizationStructuredData()} />
+            <StructuredData data={websiteStructuredData()} />
+            <OnboardingFlow />
+            <a className="skip-link" href="#main-content">
+              Skip to main content
+            </a>
+            <div className="page-shell">
+              <MaintenanceBanner />
 
                 <header className="topbar" aria-label="Primary">
                   <Link className="brand" href="/">

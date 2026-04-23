@@ -1,82 +1,68 @@
-#42 [Frontend] Add transaction history view
+#75 [Frontend] Implement policy duration picker
+Repo Avatar
+ChaoLing140/StellarInsure
+Objective
+Add duration selection UI with presets and custom range support.
+
+Scope
+Frontend implementation only
+Follow existing project conventions
+Acceptance Criteria
+Feature is implemented and accessible on relevant pages
+Loading, empty, and error states are covered where applicable
+Responsive behavior is validated on mobile and desktop
+
+#68 [Frontend] Add protocol feature grid section
+Repo Avatar
+ChaoLing140/StellarInsure
+Objective
+Implement a feature grid to present policy creation, oracle verification, and instant payouts.
+
+Scope
+Frontend implementation only
+Follow existing project conventions
+Acceptance Criteria
+Feature is implemented and accessible on relevant pages
+Loading, empty, and error states are covered where applicable
+Responsive behavior is validated on mobile and desktop
+
+#45 [Frontend] Add analytics integration
 Repo Avatar
 ChaoLing140/StellarInsure
 Description
-Create a page showing user's transaction history.
+Implement analytics tracking for user behavior insights.
 
 Tasks
- Create transaction history page
- Add transaction list with filtering
- Show transaction details
- Add explorer links
- Implement pagination
+ Choose analytics platform (Plausible, Matomo)
+ Add page view tracking
+ Track button clicks and events
+ Implement error tracking
+ Create privacy-compliant setup
 Acceptance Criteria
-Users can view all transactions
-Transactions are filterable
-Links to Stellar Explorer work
-History loads efficiently
+Page views are tracked
+Events are captured
+Privacy settings respected
+Dashboard shows data
 Priority
 Low
 
 
-#24 [Contracts] Implement contract upgradeability
+#19 [Contracts] Add oracle integration stubs
 Repo Avatar
 ChaoLing140/StellarInsure
 Description
-Add ability to upgrade contract while preserving state.
+Create placeholder functions for oracle integration.
 
 Tasks
- Research Soroban upgrade patterns
- Implement version tracking
- Add admin upgrade function
- Create state migration helpers
- Add upgrade authorization
+ Define oracle interface/trait
+ Add weather data verification stub
+ Add flight status verification stub
+ Add smart contract event verification
+ Create oracle result consumption
 Acceptance Criteria
-Contract can be upgraded
-State is preserved
-Upgrades are authorized
-Version history maintained
-Priority
-Low
-
-
-#46 [Frontend] Create onboarding flow
-Repo Avatar
-ChaoLing140/StellarInsure
-Description
-Build an onboarding experience for new users.
-
-Tasks
- Create welcome screens
- Add wallet connection guidance
- Explain policy types
- Show first policy creation help
- Add skip option for experienced users
-Acceptance Criteria
-New users understand the app
-Wallet connection is guided
-Onboarding can be skipped
-Shown only once per device
-Priority
-Low
-
-
-#13 [Backend] Add logging and monitoring
-Repo Avatar
-ChaoLing140/StellarInsure
-Description
-Implement comprehensive logging for debugging and monitoring.
-
-Tasks
- Configure structured logging (JSON format)
- Add request/response logging
- Log contract interactions
- Add error tracking (Sentry integration)
- Create health check with dependencies
-Acceptance Criteria
-Logs are structured and searchable
-Errors include full context
-Performance metrics captured
-Alerts configured for errors
+Oracle interface is defined
+Verification stubs exist for each type
+Integration points are clear
+Documentation explains oracle flow
 Priority
 Medium
