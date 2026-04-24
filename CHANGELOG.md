@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.0.0...v1.1.0) (2026-04-24)
+
+
+### Features
+
+* add k8s manifests and staging deployment workflow ([31ef8ef](https://github.com/ChaoLing140/StellarInsure/commit/31ef8eff8456644def03f68d3f542e035a9c57bd))
+
 # 1.0.0 (2026-04-24)
 
 
