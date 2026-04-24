@@ -233,6 +233,28 @@ export default function PolicyDetailPage({
 
     setSubmitState("submitting");
     window.setTimeout(() => {
+      const amount = parseAmountInput(formState.amount) ?? 0;
+      const evidenceSummary = formState.notes.trim();
+      const nextClaim: ClaimRecord = {
+        id: `CLM-${Date.now().toString().slice(-6)}`,
+        submittedAt: new Date().toISOString(),
+        amount,
+        status: "Pending",
+        evidence:
+          evidenceSummary.length > 64
+            ? `${evidenceSummary.slice(0, 61)}...`
+            : evidenceSummary,
+      };
+      setRecord((current) => {
+        if (!current || current === "error") {
+          return current;
+        }
+        return {
+          ...current,
+          status: "Claim Pending",
+          claims: [nextClaim, ...current.claims],
+        };
+      });
       setSubmitState("success");
       setFormState(INITIAL_FORM);
     }, 420);

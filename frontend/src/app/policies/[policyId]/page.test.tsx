@@ -17,14 +17,14 @@ describe("PolicyDetailPage", () => {
   it("renders the policy summary after loading completes", () => {
     render(<PolicyDetailPage params={{ policyId: "weather-alpha" }} />);
 
-    expect(screen.getByText(/loading policy snapshot/i)).toBeInTheDocument();
+    expect(screen.getByText(/loading policy data/i)).toBeInTheDocument();
 
     act(() => {
       vi.runAllTimers();
     });
 
     expect(screen.getByRole("heading", { name: /northern plains weather guard/i })).toBeInTheDocument();
-    expect(screen.getByText(/print policy packet/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /export summary/i })).toBeInTheDocument();
   });
 
   it("renders an empty claim state for policies without claims", () => {
@@ -66,6 +66,44 @@ describe("PolicyDetailPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /save handoff draft/i }));
 
     expect(screen.getByText(/requested review amount cannot exceed the policy coverage/i)).toBeInTheDocument();
+  });
+
+  it("adds a pending claim card after a valid support handoff submission", () => {
+    render(<PolicyDetailPage params={{ policyId: "flight-orbit" }} />);
+
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    fireEvent.change(screen.getByLabelText(/contact name/i), {
+      target: { value: "Ada Lovelace" },
+    });
+    fireEvent.change(screen.getByLabelText(/update email/i), {
+      target: { value: "ada@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/mobile number/i), {
+      target: { value: "+2348000000000" },
+    });
+    fireEvent.change(screen.getByLabelText(/review amount/i), {
+      target: { value: "200" },
+    });
+    fireEvent.change(screen.getByLabelText(/incident summary/i), {
+      target: {
+        value:
+          "Delayed departure exceeded trigger threshold and oracle event snapshot was attached.",
+      },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /save handoff draft/i }));
+
+    act(() => {
+      vi.runAllTimers();
+    });
+
+    expect(
+      screen.getByText(/support handoff draft saved for this device/i),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/pending/i).length).toBeGreaterThan(0);
   });
 
   it("renders the error state when policy data cannot be loaded", () => {

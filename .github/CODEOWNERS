@@ -1,0 +1,15 @@
+# Default reviewers for any unmatched file changes
+* @ChaoLing140 @Gbangbolaoluwagbemiga
+
+# Backend API and data layer
+/backend/ @ChaoLing140 @Gbangbolaoluwagbemiga
+
+# Frontend web app
+/frontend/ @ChaoLing140 @Gbangbolaoluwagbemiga
+
+# Soroban smart contracts
+/smartcontract/ @ChaoLing140 @Gbangbolaoluwagbemiga
+
+# CI/CD and container infrastructure
+/.github/workflows/ @ChaoLing140 @Gbangbolaoluwagbemiga
+/docker-compose.yml @ChaoLing140 @Gbangbolaoluwagbemiga

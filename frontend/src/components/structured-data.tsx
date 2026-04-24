@@ -1,3 +1,5 @@
+import React from "react";
+
 interface StructuredDataProps {
   data: Record<string, unknown> | Array<Record<string, unknown>>;
 }
