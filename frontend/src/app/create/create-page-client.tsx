@@ -18,6 +18,7 @@ import {
 } from "@/components/transaction-timeline";
 import { useWallet } from "@/components/wallet-provider";
 import { useAutosave } from "@/hooks/use-autosave";
+import { useAppTranslation } from "@/i18n/provider";
 import { TriggerConditionBuilder } from "@/components/trigger-condition-builder";
 import { PremiumEstimate, type PremiumBreakdown } from "@/components/premium-estimate";
 import { ValidationSummary, type ValidationError } from "@/components/validation-summary";
@@ -54,7 +55,7 @@ const INITIAL_DRAFT: PolicyDraft = {
   oracleProvider: "",
 };
 
-const STEP_LABELS = ["Select Type", "Configure", "Review", "Submit"];
+
 
 const MAX_COVERAGE_AMOUNT = 1_000_000;
 
@@ -139,6 +140,13 @@ const ORACLE_PROVIDER_MAP: Record<PolicyType, OracleProvider[]> = {
 };
 
 function StepIndicator({ current }: { current: CreateStep }) {
+  const { t } = useAppTranslation();
+  const STEP_LABELS = [
+    t("createPolicy.steps.selectType"),
+    t("createPolicy.steps.configure"),
+    t("createPolicy.steps.review"),
+    t("createPolicy.steps.submit")
+  ];
   return (
     <nav className="stepper" aria-label="Policy creation steps">
       <ol className="stepper__list">
@@ -173,6 +181,13 @@ function makePolicyId() {
 }
 
 function SuccessReceipt({
+  receipt,
+  onCreateAnother,
+}: {
+  receipt: ReceiptData;
+  onCreateAnother: () => void;
+}) {
+  const { t } = useAppTranslation();
   receipt,
   onCreateAnother,
 }: {
@@ -249,9 +264,9 @@ function SuccessReceipt({
       <span className="state-icon" aria-hidden="true">
         <Icon name="check" size="lg" tone="success" />
       </span>
-      <h3>Policy Created Successfully</h3>
+      <h3>{t("createPolicy.receipt.title")}</h3>
       <p className="state-copy">
-        Your policy has been confirmed on the Stellar network. Receipt ID: <strong>{receipt.policyId}</strong>
+        {t("createPolicy.receipt.desc")} Receipt ID: <strong>{receipt.policyId}</strong>
       </p>
 
       <dl className="definition-grid definition-grid--compact receipt-grid">
@@ -274,7 +289,7 @@ function SuccessReceipt({
       </dl>
 
       <div className="policy-copy-block">
-        <h4>Next Steps</h4>
+        <h4>{t("createPolicy.receipt.nextSteps")}</h4>
         <ul>
           <li>Track settlement and status updates from transaction history.</li>
           <li>Share this receipt with operations or compliance stakeholders.</li>
@@ -284,16 +299,16 @@ function SuccessReceipt({
 
       <div className="inline-actions">
         <button className="cta-secondary" type="button" onClick={handleShare}>
-          Share Receipt
+          {t("createPolicy.receipt.share")}
         </button>
         <button className="cta-secondary" type="button" onClick={handleDownload}>
-          Download Receipt
+          {t("createPolicy.receipt.download")}
         </button>
         <Link className="cta-primary" href="/history">
-          View Transaction History
+          {t("createPolicy.receipt.viewHistory")}
         </Link>
         <button className="cta-secondary" type="button" onClick={onCreateAnother}>
-          Create Another Policy
+          {t("createPolicy.receipt.createAnother")}
         </button>
       </div>
 
@@ -305,6 +320,7 @@ function SuccessReceipt({
 }
 
 export default function CreatePolicyPageClient() {
+  const { t } = useAppTranslation();
   const [draft, setDraft, clearDraft] = useAutosave<PolicyDraft>(
     "stellarinsure-policy-draft",
     INITIAL_DRAFT,
@@ -494,11 +510,9 @@ export default function CreatePolicyPageClient() {
   return (
     <main id="main-content" className="create-page">
       <div className="section-header create-header motion-panel">
-        <span className="eyebrow">Create Policy</span>
-        <h1 id="create-title">Protect Your Assets</h1>
-        <p>
-          Configure a parametric insurance policy and submit it directly to the Stellar network.
-        </p>
+        <span className="eyebrow">{t("createPolicy.eyebrow")}</span>
+        <h1 id="create-title">{t("createPolicy.title")}</h1>
+        <p>{t("createPolicy.description")}</p>
       </div>
 
       <StepIndicator current={step} />
@@ -508,8 +522,8 @@ export default function CreatePolicyPageClient() {
       {step === 0 && (
         <section className="create-section motion-panel" aria-labelledby="step-type-title">
           <div className="section-header">
-            <h2 id="step-type-title">Choose a Policy Type</h2>
-            <p>Select the type of parametric coverage that fits your needs.</p>
+            <h2 id="step-type-title">{t("createPolicy.typeSection.title")}</h2>
+            <p>{t("createPolicy.typeSection.desc")}</p>
           </div>
           <PolicyTypeSelector selected={draft.policyType} onSelect={handleTypeSelect} />
         </section>
@@ -518,13 +532,13 @@ export default function CreatePolicyPageClient() {
       {step === 1 && (
         <section className="create-section motion-panel" aria-labelledby="step-config-title">
           <div className="section-header">
-            <h2 id="step-config-title">Configure Your Policy</h2>
+            <h2 id="step-config-title">{t("createPolicy.configSection.title")}</h2>
             <p>Set the coverage parameters for your {draft.policyType?.replace("-", " ")} policy.</p>
           </div>
 
           <div className="form-grid">
             <label className="field">
-              <span className="field__label">Coverage Amount (XLM)</span>
+              <span className="field__label">{t("createPolicy.configSection.coverageLabel")}</span>
               <AmountInput
                 id="coverage-amount-input"
                 className="field__input"
@@ -546,7 +560,7 @@ export default function CreatePolicyPageClient() {
             </label>
 
             <div className="field" id="premium-input">
-              <span className="field__label">Premium (XLM)</span>
+              <span className="field__label">{t("createPolicy.configSection.premiumLabel")}</span>
               <input
                 className="field__input"
                 type="number"
@@ -557,7 +571,7 @@ export default function CreatePolicyPageClient() {
                 value={draft.premium}
                 onChange={(event) => updateDraft("premium", event.target.value)}
               />
-              <span className="field__hint">One-time payment to activate the policy.</span>
+              <span className="field__hint">{t("createPolicy.configSection.premiumHint")}</span>
               
               <div style={{ marginTop: "var(--space-4)" }}>
                 <PremiumEstimate
@@ -579,17 +593,17 @@ export default function CreatePolicyPageClient() {
             </div>
 
             <div className="field field--full" id="trigger-input">
-              <span className="field__label">Trigger Condition Builder</span>
+              <span className="field__label">{t("createPolicy.configSection.triggerLabel")}</span>
               <TriggerConditionBuilder 
                 onChange={(val) => updateDraft("triggerCondition", val)}
               />
               <span className="field__hint">
-                Build rules using logical operators. The condition evaluates in real-time.
+                {t("createPolicy.configSection.triggerHint")}
               </span>
             </div>
 
             <label className="field">
-              <span className="field__label">Duration (days)</span>
+              <span className="field__label">{t("createPolicy.configSection.durationLabel")}</span>
               <div style={{ display: "flex", gap: "var(--space-2)", marginBottom: "var(--space-2)", flexWrap: "wrap" }}>
                 {[30, 90, 180, 365].map((days) => (
                   <button
@@ -612,15 +626,15 @@ export default function CreatePolicyPageClient() {
                 value={draft.duration}
                 onChange={(event) => updateDraft("duration", event.target.value)}
               />
-              <span className="field__hint">How long the policy stays active.</span>
+              <span className="field__hint">{t("createPolicy.configSection.durationHint")}</span>
             </label>
           </div>
 
           <section className="panel oracle-panel" aria-labelledby="oracle-source-title">
             <div className="section-header policy-subsection">
-              <span className="eyebrow">Oracle Sources</span>
-              <h3 id="oracle-source-title">Select a trigger data provider</h3>
-              <p>Confidence scores are updated before submission. Fallback routing is shown per provider.</p>
+              <span className="eyebrow">{t("createPolicy.oracleSection.eyebrow")}</span>
+              <h3 id="oracle-source-title">{t("createPolicy.oracleSection.title")}</h3>
+              <p>{t("createPolicy.oracleSection.desc")}</p>
             </div>
 
             <OracleSourceSelector
@@ -633,22 +647,20 @@ export default function CreatePolicyPageClient() {
 
             {oracleState === "empty" ? (
               <p className="form-status" role="status">
-                This policy type has no oracle feeds yet. Select another policy type to continue.
+                {t("createPolicy.oracleSection.empty")}
               </p>
             ) : null}
           </section>
 
           <div className="form-actions">
-            <button className="cta-secondary" type="button" onClick={handleBack}>
-              Back
-            </button>
+            <button className="cta-secondary" type="button" onClick={handleBack}>{t("createPolicy.actions.back")}</button>
             <button
               className="cta-primary"
               type="button"
               disabled={!isConfigValid}
               onClick={handleConfigureNext}
             >
-              Continue to Review
+              {t("createPolicy.actions.continue")}
             </button>
           </div>
         </section>
@@ -657,8 +669,8 @@ export default function CreatePolicyPageClient() {
       {step === 2 && (
         <section className="create-section motion-panel" aria-labelledby="step-review-title">
           <div className="section-header">
-            <h2 id="step-review-title">Review Your Policy</h2>
-            <p>Confirm the details below before submitting to the Stellar network.</p>
+            <h2 id="step-review-title">{t("createPolicy.reviewSection.title")}</h2>
+            <p>{t("createPolicy.reviewSection.desc")}</p>
           </div>
 
           <div className="panel">
@@ -691,17 +703,15 @@ export default function CreatePolicyPageClient() {
               </div>
             </dl>
             <div className="policy-copy-block" style={{ marginTop: "var(--space-4)" }}>
-              <h3>Trigger Condition</h3>
+              <h3>{t("createPolicy.reviewSection.triggerCondition")}</h3>
               <p>{draft.triggerCondition}</p>
             </div>
           </div>
 
           <div className="form-actions">
-            <button className="cta-secondary" type="button" onClick={handleBack}>
-              Back
-            </button>
+            <button className="cta-secondary" type="button" onClick={handleBack}>{t("createPolicy.actions.back")}</button>
             <button className="cta-primary" type="button" disabled={!isWalletReady} onClick={simulateSubmit}>
-              Sign and Submit
+              {t("createPolicy.actions.signSubmit")}
             </button>
             <button
               className="cta-secondary"
@@ -711,7 +721,7 @@ export default function CreatePolicyPageClient() {
                 setStep(0);
               }}
             >
-              Discard Draft
+              {t("createPolicy.actions.discard")}
             </button>
           </div>
 
@@ -732,8 +742,8 @@ export default function CreatePolicyPageClient() {
       {step === 3 && (
         <section className="create-section motion-panel" aria-labelledby="step-submit-title">
           <div className="section-header">
-            <h2 id="step-submit-title">Submitting Your Policy</h2>
-            <p>Follow the progress of your on-chain transaction below.</p>
+            <h2 id="step-submit-title">{t("createPolicy.submitSection.title")}</h2>
+            <p>{t("createPolicy.submitSection.desc")}</p>
           </div>
 
           <div className="panel">
