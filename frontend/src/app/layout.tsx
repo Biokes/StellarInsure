@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ErrorBoundary } from "@/components/error-boundary";
+import { SiteHeader } from "@/components/site-header";
 import { StructuredData } from "@/components/structured-data";
-import { WalletConnectionButton } from "@/components/wallet-connection-button";
 import { WalletProvider } from "@/components/wallet-provider";
 import { MaintenanceBanner } from "@/components/maintenance-banner";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { OnboardingFlow } from "@/components/onboarding";
 import { PageTransition } from "@/components/page-transition";
 import { LanguageProvider } from "@/i18n/provider";
@@ -84,41 +83,18 @@ export default function RootLayout({
             </a>
             <div className="page-shell">
               <MaintenanceBanner />
+              <SiteHeader />
 
-                <header className="topbar" aria-label="Primary">
-                  <Link className="brand" href="/">
-                    <span className="brand-mark" aria-hidden="true">
-                      SI
-                    </span>
-                    <span className="brand-copy">
-                      <strong>StellarInsure</strong>
-                      <span>Parametric cover on Stellar</span>
-                    </span>
-                  </Link>
+              <PageTransition>{children}</PageTransition>
 
-                  <nav className="nav-links" aria-label="Section navigation">
-                    <Link href="/">Overview</Link>
-                    <Link href="/create">Create Policy</Link>
-                    <Link href="/policies">My Policies</Link>
-                    <Link href="/history">History</Link>
-                  </nav>
-
-                  <div className="topbar-actions">
-                    <WalletConnectionButton />
-                    <LanguageSwitcher />
-                  </div>
-                </header>
-
-                <PageTransition>{children}</PageTransition>
-
-                <footer className="footer">
-                  <span>Built for transparent policy creation, automated claims, and multilingual access.</span>
-                  <nav aria-label="Legal">
-                    <Link href="/legal/terms">Terms of Service</Link>
-                    <Link href="/legal/privacy">Privacy Policy</Link>
-                  </nav>
-                </footer>
-              </div>
+              <footer className="footer">
+                <span>Built for transparent policy creation, automated claims, and multilingual access.</span>
+                <nav aria-label="Legal">
+                  <Link href="/legal/terms">Terms of Service</Link>
+                  <Link href="/legal/privacy">Privacy Policy</Link>
+                </nav>
+              </footer>
+            </div>
             </WalletProvider>
           </LanguageProvider>
         </ErrorBoundary>
