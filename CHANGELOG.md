@@ -1,0 +1,44 @@
+# 1.0.0 (2026-04-24)
+
+
+### Bug Fixes
+
+* [#208](https://github.com/ChaoLing140/StellarInsure/issues/208) [#211](https://github.com/ChaoLing140/StellarInsure/issues/211) [#212](https://github.com/ChaoLing140/StellarInsure/issues/212) [#215](https://github.com/ChaoLing140/StellarInsure/issues/215) resolve frontend & docker issues ([29a6d2a](https://github.com/ChaoLing140/StellarInsure/commit/29a6d2ac37f8c2e32169914185bdd0684615cb59))
+* restrict CORS to specific origins for security ([440eb67](https://github.com/ChaoLing140/StellarInsure/commit/440eb673db36fcaf499f1092990a94565d6f90da))
+
+
+### Features
+
+* add claim flow polish, CODEOWNERS, release workflow, and component tests ([96180ec](https://github.com/ChaoLing140/StellarInsure/commit/96180ecdd825950c9089a3ec2b94f080a4769fee)), closes [#205](https://github.com/ChaoLing140/StellarInsure/issues/205) [#216](https://github.com/ChaoLing140/StellarInsure/issues/216) [#217](https://github.com/ChaoLing140/StellarInsure/issues/217) [#222](https://github.com/ChaoLing140/StellarInsure/issues/222) [#205](https://github.com/ChaoLing140/StellarInsure/issues/205) [#216](https://github.com/ChaoLing140/StellarInsure/issues/216) [#217](https://github.com/ChaoLing140/StellarInsure/issues/217) [#222](https://github.com/ChaoLing140/StellarInsure/issues/222)
+* add comprehensive input validation with Pydantic ([bfc8e99](https://github.com/ChaoLing140/StellarInsure/commit/bfc8e995758742d251bca0ac639409d377eef358))
+* add contract events risk pool and test coverage ([e78c957](https://github.com/ChaoLing140/StellarInsure/commit/e78c9573ee27a77059c978bf870212aa323ef455))
+* add formatted coverage amount inputs for [#73](https://github.com/ChaoLing140/StellarInsure/issues/73) ([c356b70](https://github.com/ChaoLing140/StellarInsure/commit/c356b701cf14dd6fc741f4a650f5bbcddfaf952d))
+* add frontend quality improvements and ci workflows ([c00876b](https://github.com/ChaoLing140/StellarInsure/commit/c00876b9a8a81d798751916d33d560c0c3170cef))
+* add PostgreSQL connection pooling configuration ([4a7ccfa](https://github.com/ChaoLing140/StellarInsure/commit/4a7ccfaa88117e6deb592b425b4229ea1a744b6d))
+* addede the fixes ([313064e](https://github.com/ChaoLing140/StellarInsure/commit/313064e9588ed8b8004baca80aca5c6f2efdc778))
+* **backend:** add environment config, rate limiting, Redis caching, and webhook notifications ([6d6a2bc](https://github.com/ChaoLing140/StellarInsure/commit/6d6a2bca402d17b7a0618540d12ce6939e1872e0)), closes [#48](https://github.com/ChaoLing140/StellarInsure/issues/48) [#11](https://github.com/ChaoLing140/StellarInsure/issues/11) [#9](https://github.com/ChaoLing140/StellarInsure/issues/9) [#49](https://github.com/ChaoLing140/StellarInsure/issues/49)
+* build policy summary review step for [#78](https://github.com/ChaoLing140/StellarInsure/issues/78) ([92564cf](https://github.com/ChaoLing140/StellarInsure/commit/92564cfbb56ae56fa360825375e80a7a3fc9d3f3))
+* **contracts:** implement claim payout verification and treasury tracking ([#20](https://github.com/ChaoLing140/StellarInsure/issues/20)) ([dc4ad59](https://github.com/ChaoLing140/StellarInsure/commit/dc4ad5945d615b4820a94bf234fe80f9bbbaecda))
+* **contracts:** implement policy expiration checking ([#18](https://github.com/ChaoLing140/StellarInsure/issues/18)) ([4e22353](https://github.com/ChaoLing140/StellarInsure/commit/4e22353f2013214c222ea230a6237b3635745332))
+* **frontend:** add pending transaction timeline ([680a735](https://github.com/ChaoLing140/StellarInsure/commit/680a73500a2465d214643eb9f731384082405e73)), closes [#81](https://github.com/ChaoLing140/StellarInsure/issues/81)
+* **frontend:** build policy creation page shell with stepper layout ([c2b2ad0](https://github.com/ChaoLing140/StellarInsure/commit/c2b2ad0ba738969ebd4a561a15ceb2b1ff18596d)), closes [#71](https://github.com/ChaoLing140/StellarInsure/issues/71)
+* **frontend:** create transaction confirmation modal ([cbe204b](https://github.com/ChaoLing140/StellarInsure/commit/cbe204bb2dd10f4460dae3fbf97f5b24c452fd32)), closes [#80](https://github.com/ChaoLing140/StellarInsure/issues/80)
+* **frontend:** create trigger-builder, premium-estimate, and validation-summary components ([#76](https://github.com/ChaoLing140/StellarInsure/issues/76), [#74](https://github.com/ChaoLing140/StellarInsure/issues/74), [#84](https://github.com/ChaoLing140/StellarInsure/issues/84)) ([89980ed](https://github.com/ChaoLing140/StellarInsure/commit/89980edd4dcf51e2c92a8888af0c61b10b51b76f))
+* **frontend:** implement loading skeleton library ([4c6f387](https://github.com/ChaoLing140/StellarInsure/commit/4c6f3872d64f915118b08340b2ce6fb0da13eb2b)), closes [#85](https://github.com/ChaoLing140/StellarInsure/issues/85)
+* **frontend:** implement policy draft autosave ([935ed13](https://github.com/ChaoLing140/StellarInsure/commit/935ed13f55e1238f51f4aae9a43caaa28c268e7b)), closes [#79](https://github.com/ChaoLing140/StellarInsure/issues/79)
+* **frontend:** implement policy type selector cards ([ade8f80](https://github.com/ChaoLing140/StellarInsure/commit/ade8f80903f05afbccc79b3bd09ed44b2b49f0c1)), closes [#72](https://github.com/ChaoLing140/StellarInsure/issues/72)
+* **frontend:** implement responsive mobile bottom navigation ([#131](https://github.com/ChaoLing140/StellarInsure/issues/131)) ([b7da18a](https://github.com/ChaoLing140/StellarInsure/commit/b7da18a0844d120c92ba268175b2188c80b283cf))
+* **frontend:** improve policy detail usability ([06b9e74](https://github.com/ChaoLing140/StellarInsure/commit/06b9e74830ddc90b056bae456f1c09c757437cc3))
+* **frontend:** integrate condition builder, premium estimate, and validation summary ([#76](https://github.com/ChaoLing140/StellarInsure/issues/76), [#74](https://github.com/ChaoLing140/StellarInsure/issues/74), [#84](https://github.com/ChaoLing140/StellarInsure/issues/84)) ([c1b14e3](https://github.com/ChaoLing140/StellarInsure/commit/c1b14e3857333365318a259bc7f9bab9d9dddcd1))
+* implement claim endpoints with file upload support ([f52f40d](https://github.com/ChaoLing140/StellarInsure/commit/f52f40d47cfe33a93f5d53cc04c7e56e78eda776))
+* implement claim endpoints with file upload support ([8438a05](https://github.com/ChaoLing140/StellarInsure/commit/8438a05004f3453befd78be51d4d00dda6a7795e))
+* implement database models with SQLAlchemy ([06814fa](https://github.com/ChaoLing140/StellarInsure/commit/06814fa2efbb8d66955e81fb0cc06392787b22d4))
+* implement JWT authentication system ([2df9dd2](https://github.com/ChaoLing140/StellarInsure/commit/2df9dd271dbcb526b832fcf733d5f9d7c1c7e47d))
+* implement policy endpoints with pagination and filtering ([e868b1c](https://github.com/ChaoLing140/StellarInsure/commit/e868b1c6e7a306f398d0c962908c0c956aa57c0c))
+* implement Stellar smart contract integration ([bd66b5a](https://github.com/ChaoLing140/StellarInsure/commit/bd66b5a1d56e63a56cd83a9d78c9c4c02b6f0d0e))
+* implement token transfers and backend testing factories ([a30df2d](https://github.com/ChaoLing140/StellarInsure/commit/a30df2d8c529f47b5ae2950c5bc0a61af3ee6acb))
+* implement transaction history, onboarding flow, backend logging, and contract upgradeability ([8800f2f](https://github.com/ChaoLing140/StellarInsure/commit/8800f2f0e78ba072ff793b30b7bafaf485c79ff1))
+* initial commit - StellarInsure parametric insurance protocol ([9a883eb](https://github.com/ChaoLing140/StellarInsure/commit/9a883ebda635bb61c3cd41d78c26eeecf0e3e5e3))
+* multi-sig admin ([#16](https://github.com/ChaoLing140/StellarInsure/issues/16)), policy renewal ([#22](https://github.com/ChaoLing140/StellarInsure/issues/22)), integration tests ([#29](https://github.com/ChaoLing140/StellarInsure/issues/29)), emergency pause ([#51](https://github.com/ChaoLing140/StellarInsure/issues/51)) ([48c88f0](https://github.com/ChaoLing140/StellarInsure/commit/48c88f0b8821297da48ef0da16c9aea5eb669e90))
+* premium calculation, mutation testing, and legal pages ([c7f4d1f](https://github.com/ChaoLing140/StellarInsure/commit/c7f4d1f4637e1ddbdad9676906902f89f59a158e)), closes [#17](https://github.com/ChaoLing140/StellarInsure/issues/17) [#52](https://github.com/ChaoLing140/StellarInsure/issues/52) [#128](https://github.com/ChaoLing140/StellarInsure/issues/128)
+* resolve issue templates, layout navigation, and fuzz coverage ([704bfbe](https://github.com/ChaoLing140/StellarInsure/commit/704bfbe3870619f081b0681b7336e4a09d3d6615))
