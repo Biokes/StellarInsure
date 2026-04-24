@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
+import { AnalyticsDashboard } from "@/components/analytics-dashboard";
 import { FeatureCard } from "@/components/feature-card";
 import { Icon } from "@/components/icon";
 import { PolicyMetricsCharts } from "@/components/policy-metrics-charts";
@@ -176,6 +177,15 @@ export default function HomePage() {
           <p>Reusable charts for premiums, payouts, and policy counts.</p>
         </div>
         <PolicyMetricsCharts />
+      </section>
+
+      <section id="analytics" aria-labelledby="analytics-title">
+        <div className="section-header">
+          <span className="eyebrow">Analytics</span>
+          <h2 id="analytics-title">Dashboard Insights</h2>
+          <p>Monitor key metrics on active policies, claims, and premium trends.</p>
+        </div>
+        <AnalyticsDashboard />
       </section>
 
       <TransactionModal

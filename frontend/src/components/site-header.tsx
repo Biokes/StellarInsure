@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { NetworkSwitcher } from "@/components/network-switcher";
 import { WalletConnectionButton } from "@/components/wallet-connection-button";
 import { CommandPalette } from "@/components/command-palette";
 
@@ -104,6 +105,7 @@ export function SiteHeader() {
 
         <div className="topbar-actions topbar-actions--desktop">
           <CommandPalette />
+          <NetworkSwitcher />
           <WalletConnectionButton />
           <LanguageSwitcher />
         </div>
@@ -129,6 +131,7 @@ export function SiteHeader() {
         </nav>
         <div className="mobile-drawer__actions">
           <CommandPalette />
+          <NetworkSwitcher />
           <WalletConnectionButton />
           <LanguageSwitcher />
         </div>

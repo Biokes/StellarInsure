@@ -10,6 +10,16 @@ type PolicyStatus = "active" | "pending" | "expired" | "claimed" | "all";
 type PolicyType = "weather" | "flight" | "smart-contract" | "asset" | "health" | "all";
 type SortBy = "date" | "coverage";
 
+interface FilterState {
+  statusFilter: PolicyStatus;
+  typeFilter: PolicyType;
+  sortBy: SortBy;
+  minCoverage: number;
+  maxCoverage: number;
+  startDate: string;
+  endDate: string;
+}
+
 interface Policy {
   id: string;
   title: string;
@@ -44,6 +54,39 @@ const MOCK_POLICIES: Policy[] = [
     createdAt: "2026-03-01",
     expiresAt: "2026-06-01",
     oracleSource: "Airline Delay API",
+  },
+  {
+    id: "smart-contract-alpha",
+    title: "Smart Contract Risk Shield",
+    type: "smart-contract",
+    status: "active",
+    coverageAmount: 10000,
+    premiumAmount: 250.0,
+    createdAt: "2026-01-10",
+    expiresAt: "2026-07-10",
+    oracleSource: "Ethereum Audit API",
+  },
+  {
+    id: "health-basic",
+    title: "Basic Health Coverage",
+    type: "health",
+    status: "pending",
+    coverageAmount: 3000,
+    premiumAmount: 75.0,
+    createdAt: "2026-04-01",
+    expiresAt: "2026-10-01",
+    oracleSource: "Health Oracle",
+  },
+  {
+    id: "asset-protection",
+    title: "Asset Value Protection",
+    type: "asset",
+    status: "expired",
+    coverageAmount: 8000,
+    premiumAmount: 200.0,
+    createdAt: "2025-10-01",
+    expiresAt: "2026-01-01",
+    oracleSource: "Price Feed API",
   },
 ];
 
@@ -131,19 +174,32 @@ function PolicyCard({ policy }: { policy: Policy }) {
 }
 
 export default function PoliciesListPageClient() {
+  const { t } = useAppTranslation();
   const [statusFilter, setStatusFilter] = useState<PolicyStatus>("all");
   const [typeFilter, setTypeFilter] = useState<PolicyType>("all");
   const [sortBy, setSortBy] = useState<SortBy>("date");
+  const [minCoverage, setMinCoverage] = useState<number>(0);
+  const [maxCoverage, setMaxCoverage] = useState<number>(50000);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
 
   const deferredStatusFilter = useDeferredValue(statusFilter);
   const deferredTypeFilter = useDeferredValue(typeFilter);
   const deferredSortBy = useDeferredValue(sortBy);
+  const deferredMinCoverage = useDeferredValue(minCoverage);
+  const deferredMaxCoverage = useDeferredValue(maxCoverage);
+  const deferredStartDate = useDeferredValue(startDate);
+  const deferredEndDate = useDeferredValue(endDate);
 
   const isFiltering =
     deferredStatusFilter !== statusFilter ||
     deferredTypeFilter !== typeFilter ||
-    deferredSortBy !== sortBy;
+    deferredSortBy !== sortBy ||
+    deferredMinCoverage !== minCoverage ||
+    deferredMaxCoverage !== maxCoverage ||
+    deferredStartDate !== startDate ||
+    deferredEndDate !== endDate;
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 600);
@@ -154,9 +210,32 @@ export default function PoliciesListPageClient() {
     return MOCK_POLICIES.filter((policy) => {
       const matchStatus = deferredStatusFilter === "all" || policy.status === deferredStatusFilter;
       const matchType = deferredTypeFilter === "all" || policy.type === deferredTypeFilter;
-      return matchStatus && matchType;
+      const matchCoverage =
+        policy.coverageAmount >= deferredMinCoverage &&
+        policy.coverageAmount <= deferredMaxCoverage;
+      
+      let matchDateRange = true;
+      if (deferredStartDate) {
+        matchDateRange =
+          matchDateRange &&
+          new Date(policy.createdAt) >= new Date(deferredStartDate);
+      }
+      if (deferredEndDate) {
+        matchDateRange =
+          matchDateRange &&
+          new Date(policy.createdAt) <= new Date(deferredEndDate);
+      }
+      
+      return matchStatus && matchType && matchCoverage && matchDateRange;
     });
-  }, [deferredStatusFilter, deferredTypeFilter]);
+  }, [
+    deferredStatusFilter,
+    deferredTypeFilter,
+    deferredMinCoverage,
+    deferredMaxCoverage,
+    deferredStartDate,
+    deferredEndDate,
+  ]);
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -192,6 +271,30 @@ export default function PoliciesListPageClient() {
     });
   }
 
+  function handleMinCoverageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    startTransition(() => {
+      setMinCoverage(Number(event.target.value) || 0);
+    });
+  }
+
+  function handleMaxCoverageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    startTransition(() => {
+      setMaxCoverage(Number(event.target.value) || 50000);
+    });
+  }
+
+  function handleStartDateChange(event: React.ChangeEvent<HTMLInputElement>) {
+    startTransition(() => {
+      setStartDate(event.target.value);
+    });
+  }
+
+  function handleEndDateChange(event: React.ChangeEvent<HTMLInputElement>) {
+    startTransition(() => {
+      setEndDate(event.target.value);
+    });
+  }
+
   return (
     <main id="main-content" className="policy-page">
       <div className="section-header">
@@ -206,7 +309,7 @@ export default function PoliciesListPageClient() {
       <div className="policy-filters motion-panel" role="search" aria-label="Filter and sort policies">
         <div className="policy-filter-group">
           <label htmlFor="status-filter" className="policy-filter-label">
-            Status
+            {t("policies.filters.status")}
           </label>
           <select
             id="status-filter"
@@ -214,7 +317,7 @@ export default function PoliciesListPageClient() {
             value={statusFilter}
             onChange={handleStatusChange}
           >
-            <option value="all">All Statuses</option>
+            <option value="all">{t("policies.filters.allStatuses")}</option>
             <option value="active">Active</option>
             <option value="pending">Pending</option>
             <option value="claimed">Claimed</option>
@@ -224,7 +327,7 @@ export default function PoliciesListPageClient() {
 
         <div className="policy-filter-group">
           <label htmlFor="type-filter" className="policy-filter-label">
-            Type
+            {t("policies.filters.type")}
           </label>
           <select
             id="type-filter"
@@ -232,7 +335,7 @@ export default function PoliciesListPageClient() {
             value={typeFilter}
             onChange={handleTypeChange}
           >
-            <option value="all">All Types</option>
+            <option value="all">{t("policies.filters.allTypes")}</option>
             <option value="weather">Weather</option>
             <option value="flight">Flight Delay</option>
             <option value="smart-contract">Smart Contract</option>
@@ -242,8 +345,64 @@ export default function PoliciesListPageClient() {
         </div>
 
         <div className="policy-filter-group">
+          <label htmlFor="start-date-filter" className="policy-filter-label">
+            {t("policies.filters.startDate")}
+          </label>
+          <input
+            id="start-date-filter"
+            type="date"
+            className="policy-select"
+            value={startDate}
+            onChange={handleStartDateChange}
+          />
+        </div>
+
+        <div className="policy-filter-group">
+          <label htmlFor="end-date-filter" className="policy-filter-label">
+            {t("policies.filters.endDate")}
+          </label>
+          <input
+            id="end-date-filter"
+            type="date"
+            className="policy-select"
+            value={endDate}
+            onChange={handleEndDateChange}
+          />
+        </div>
+
+        <div className="policy-filter-group">
+          <label htmlFor="min-coverage-filter" className="policy-filter-label">
+            {t("policies.filters.minCoverage")}
+          </label>
+          <input
+            id="min-coverage-filter"
+            type="number"
+            className="policy-select"
+            value={minCoverage}
+            onChange={handleMinCoverageChange}
+            min="0"
+            step="100"
+          />
+        </div>
+
+        <div className="policy-filter-group">
+          <label htmlFor="max-coverage-filter" className="policy-filter-label">
+            {t("policies.filters.maxCoverage")}
+          </label>
+          <input
+            id="max-coverage-filter"
+            type="number"
+            className="policy-select"
+            value={maxCoverage}
+            onChange={handleMaxCoverageChange}
+            min="0"
+            step="100"
+          />
+        </div>
+
+        <div className="policy-filter-group">
           <label htmlFor="sort-filter" className="policy-filter-label">
-            Sort By
+            {t("policies.filters.sortBy")}
           </label>
           <select
             id="sort-filter"
@@ -251,8 +410,8 @@ export default function PoliciesListPageClient() {
             value={sortBy}
             onChange={handleSortChange}
           >
-            <option value="date">Newest First</option>
-            <option value="coverage">Highest Coverage</option>
+            <option value="date">{t("policies.filters.newestFirst")}</option>
+            <option value="coverage">{t("policies.filters.highestCoverage")}</option>
           </select>
         </div>
       </div>
@@ -273,10 +432,10 @@ export default function PoliciesListPageClient() {
           <span className="policy-empty-icon" aria-hidden="true">
             <Icon name="document" size="lg" tone="muted" />
           </span>
-          <h2>No policies found</h2>
-          <p>No policies match your current filters.</p>
+          <h2>{t("policies.empty.title")}</h2>
+          <p>{t("policies.empty.message")}</p>
           <Link href="/create" className="cta-secondary">
-            Create your first policy
+            {t("policies.empty.cta")}
           </Link>
         </div>
       ) : (
