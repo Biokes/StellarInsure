@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 
+import { AddressBook } from "@/components/address-book";
+
 interface SettingsSection {
-  name: "account" | "preferences" | "security";
+  name: "account" | "preferences" | "security" | "address-book";
   label: string;
 }
 
@@ -25,6 +27,7 @@ export default function SettingsPageClient() {
     { name: "account", label: "Account" },
     { name: "preferences", label: "Preferences" },
     { name: "security", label: "Security" },
+    { name: "address-book", label: "Address Book" },
   ];
 
   async function handleSave(event: React.FormEvent) {
@@ -209,12 +212,20 @@ export default function SettingsPageClient() {
           )}
 
           {/* Action Buttons */}
-          <div className="form-actions">
-            <button className="cta-primary" type="submit" disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
-            </button>
-          </div>
+          {activeTab !== "address-book" && (
+            <div className="form-actions">
+              <button className="cta-primary" type="submit" disabled={loading}>
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          )}
         </form>
+
+        {activeTab === "address-book" && (
+          <div className="settings-panel" role="tabpanel">
+            <AddressBook />
+          </div>
+        )}
       </div>
     </main>
   );

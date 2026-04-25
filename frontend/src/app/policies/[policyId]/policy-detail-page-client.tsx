@@ -8,6 +8,7 @@ import { useAppTranslation } from "@/i18n/provider";
 import { Icon } from "@/components/icon";
 import { Skeleton, SkeletonText } from "@/components/skeleton";
 import { TransactionModal } from "@/components/transaction-modal";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 type PolicyStatus = "Active" | "Claim Pending" | "Claim Approved";
 type ClaimStatus = "Approved" | "Pending";
@@ -376,6 +377,13 @@ export default function PolicyDetailPage({
 
   return (
     <main id="main-content" tabIndex={-1} className="policy-page">
+      <Breadcrumbs
+        items={[
+          { label: "Overview", href: "/" },
+          { label: "My Policies", href: "/policies" },
+          { label: currentPolicy.title },
+        ]}
+      />
       <section className="policy-shell print-shell">
         <header className="section-header policy-header">
           <div>

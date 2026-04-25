@@ -29,7 +29,12 @@ export type IconName =
   | "trending-up"
   | "trending-down"
   | "verify"
-  | "alert-circle";
+  | "alert-circle"
+  | "copy"
+  | "upload"
+  | "trash"
+  | "edit"
+  | "chevron-right";
 
 type IconSize = "sm" | "md" | "lg";
 type IconTone =
@@ -265,6 +270,40 @@ function getPath(name: IconName) {
           <line x1="12" x2="12.01" y1="16" y2="16" />
         </>
       );
+    case "copy":
+      return (
+        <>
+          <rect x="9" y="9" width="13" height="13" rx="2" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </>
+      );
+    case "upload":
+      return (
+        <>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
+        </>
+      );
+    case "trash":
+      return (
+        <>
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          <path d="M10 11v6" />
+          <path d="M14 11v6" />
+          <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+        </>
+      );
+    case "edit":
+      return (
+        <>
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+        </>
+      );
+    case "chevron-right":
+      return <path d="m9 18 6-6-6-6" />;
   }
 }
 

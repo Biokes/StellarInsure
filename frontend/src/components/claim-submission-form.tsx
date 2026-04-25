@@ -3,6 +3,11 @@
 import React, { useState } from "react";
 import { Icon } from "@/components/icon";
 import { ClaimEligibilityChecker } from "@/components/claim-eligibility-checker";
+import {
+  DocumentUpload,
+  createDocument,
+  type UploadedDocument,
+} from "@/components/document-upload";
 
 export type ClaimType = "flight_delay" | "weather" | "crop_failure" | "parametric";
 
@@ -107,6 +112,15 @@ export function ClaimSubmissionForm({
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [attachments, setAttachments] = useState<UploadedDocument[]>([]);
+
+  function addAttachments(incoming: File[]) {
+    setAttachments((prev) => [...prev, ...incoming.map(createDocument)]);
+  }
+
+  function removeAttachment(id: string) {
+    setAttachments((prev) => prev.filter((doc) => doc.id !== id));
+  }
 
   function setField<K extends keyof ClaimFormData>(key: K, value: ClaimFormData[K]) {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -301,6 +315,20 @@ export function ClaimSubmissionForm({
               />
             ))}
           </div>
+        </div>
+
+        {/* Attachments */}
+        <div className="claim-field">
+          <span className="claim-label">Attachments</span>
+          <DocumentUpload
+            label="Attach documents"
+            hint="Drag and drop reports, photos, or PDFs (max 10 MB each)."
+            accept=".pdf,.png,.jpg,.jpeg,image/*"
+            maxFileSizeBytes={10 * 1024 * 1024}
+            files={attachments}
+            onFilesAdded={addAttachments}
+            onRemove={removeAttachment}
+          />
         </div>
       </div>
 
