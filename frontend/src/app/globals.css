@@ -3469,3 +3469,190 @@ dt,
   justify-content: center;
   margin-bottom: 1.5rem;
 }
+
+/* ── ApiErrorBoundary (#125) ─────────────────────────────────────────── */
+.api-error-boundary--section {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+.api-error-boundary__inner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 28rem;
+}
+.api-error-boundary__heading {
+  font-size: var(--step-2);
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+.api-error-boundary__message {
+  color: var(--text-muted);
+  margin: 0;
+}
+.api-error-boundary__details {
+  width: 100%;
+  text-align: left;
+  background: var(--surface-raised);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  font-size: var(--step-0);
+}
+.api-error-boundary__details pre {
+  margin-top: 0.5rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-danger-500);
+}
+.api-error-boundary__retry-btn {
+  background: var(--color-sky-500);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.api-error-boundary__retry-btn:hover {
+  opacity: 0.9;
+}
+/* card variant */
+.api-error-boundary--card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--color-danger-100);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+/* inline variant */
+.api-error-boundary--inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--step-0);
+  color: var(--color-danger-500);
+}
+.api-error-boundary__retry-link {
+  background: none;
+  border: none;
+  color: var(--color-sky-500);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+/* ── OfflineBanner (#126) ────────────────────────────────────────────── */
+.offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--color-ink-900);
+  color: var(--color-white);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: var(--step-0);
+  font-weight: 500;
+}
+.offline-banner--restored {
+  background: var(--color-success-500);
+}
+.offline-banner__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+.offline-banner__dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+}
+
+/* ── UnsavedChangesGuard (#122) ──────────────────────────────────────── */
+.unsaved-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.unsaved-dialog {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 28rem;
+  width: 100%;
+  box-shadow: var(--shadow-overlay);
+}
+.unsaved-dialog__heading {
+  font-size: var(--step-2);
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  color: var(--text);
+}
+.unsaved-dialog__body {
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+}
+.unsaved-dialog__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.unsaved-dialog__btn-stay {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+}
+.unsaved-dialog__btn-leave {
+  background: var(--color-danger-500);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── Reduced-motion (#139) ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .page-transition,
+  .motion-panel {
+    animation: none;
+  }
+}

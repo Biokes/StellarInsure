@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { StructuredData } from "@/components/structured-data";
 import { WalletProvider } from "@/components/wallet-provider";
 import { MaintenanceBanner } from "@/components/maintenance-banner";
+import { OfflineBanner } from "@/components/offline-banner";
 import { OnboardingFlow } from "@/components/onboarding";
 import { OnboardingTooltips } from "@/components/onboarding-tooltips";
 import { PageTransition } from "@/components/page-transition";
@@ -85,6 +86,7 @@ export default function RootLayout({
                 Skip to main content
               </a>
               <div className="page-shell">
+                <OfflineBanner />
                 <MaintenanceBanner />
                 <SiteHeader />
 
