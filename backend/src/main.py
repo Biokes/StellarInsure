@@ -3,6 +3,7 @@ import logging
 import time
 import json
 import uuid
+from sqlalchemy import text
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
@@ -141,7 +142,7 @@ async def health():
     # Check DB connection
     try:
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
             health_status["dependencies"]["database"] = "connected"
     except Exception as e:
         health_status["status"] = "unhealthy"

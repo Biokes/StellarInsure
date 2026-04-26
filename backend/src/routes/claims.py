@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 import logging
-from fastapi import APIRouter, Depends, status, Query, UploadFile, File, Form
+from fastapi import APIRouter, Depends, status, Query, UploadFile, File, Form, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import os
@@ -62,6 +62,7 @@ def format_claim_response(claim: Claim) -> ClaimResponse:
 )
 async def create_claim(
     claim_data: ClaimCreateRequest,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
@@ -94,20 +95,18 @@ async def create_claim(
     db.commit()
     db.refresh(claim)
 
-    try:
-        dispatch_webhook_event(
-            db=db,
-            user_id=current_user.id,
-            event_type="claim.created",
-            payload={
-                "claim_id": claim.id,
-                "policy_id": claim.policy_id,
-                "claim_amount": float(claim.claim_amount),
-                "approved": claim.approved,
-            },
-        )
-    except Exception:
-        logger.exception("Failed to dispatch claim.created webhook for claim_id=%s", claim.id)
+    background_tasks.add_task(
+        dispatch_webhook_event,
+        db=db,
+        user_id=current_user.id,
+        event_type="claim.created",
+        payload={
+            "claim_id": claim.id,
+            "policy_id": claim.policy_id,
+            "claim_amount": float(claim.claim_amount),
+            "approved": claim.approved,
+        },
+    )
 
     return format_claim_response(claim)
 
@@ -126,6 +125,7 @@ async def create_claim(
     }
 )
 async def create_claim_with_file(
+    background_tasks: BackgroundTasks,
     policy_id: int = Form(...),
     claim_amount: float = Form(..., gt=0),
     file: UploadFile = File(...),
@@ -164,20 +164,18 @@ async def create_claim_with_file(
     db.commit()
     db.refresh(claim)
 
-    try:
-        dispatch_webhook_event(
-            db=db,
-            user_id=current_user.id,
-            event_type="claim.created",
-            payload={
-                "claim_id": claim.id,
-                "policy_id": claim.policy_id,
-                "claim_amount": float(claim.claim_amount),
-                "approved": claim.approved,
-            },
-        )
-    except Exception:
-        logger.exception("Failed to dispatch claim.created webhook for claim_id=%s", claim.id)
+    background_tasks.add_task(
+        dispatch_webhook_event,
+        db=db,
+        user_id=current_user.id,
+        event_type="claim.created",
+        payload={
+            "claim_id": claim.id,
+            "policy_id": claim.policy_id,
+            "claim_amount": float(claim.claim_amount),
+            "approved": claim.approved,
+        },
+    )
 
     return format_claim_response(claim)
 
@@ -277,6 +275,7 @@ async def list_claims(
 )
 async def update_claim_status(
     claim_id: int,
+    background_tasks: BackgroundTasks,
     approved: bool = Query(..., description="Approval status"),
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
@@ -303,21 +302,19 @@ async def update_claim_status(
     db.refresh(claim)
 
     event_type = "claim.approved" if approved else "claim.rejected"
-    try:
-        dispatch_webhook_event(
-            db=db,
-            user_id=current_user.id,
-            event_type=event_type,
-            payload={
-                "claim_id": claim.id,
-                "policy_id": claim.policy_id,
-                "claim_amount": float(claim.claim_amount),
-                "approved": claim.approved,
-                "policy_status": policy.status.value if policy else None,
-            },
-        )
-    except Exception:
-        logger.exception("Failed to dispatch %s webhook for claim_id=%s", event_type, claim.id)
+    background_tasks.add_task(
+        dispatch_webhook_event,
+        db=db,
+        user_id=current_user.id,
+        event_type=event_type,
+        payload={
+            "claim_id": claim.id,
+            "policy_id": claim.policy_id,
+            "claim_amount": float(claim.claim_amount),
+            "approved": claim.approved,
+            "policy_status": policy.status.value if policy else None,
+        },
+    )
 
     return format_claim_response(claim)
 
