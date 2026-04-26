@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.10.0...v1.11.0) (2026-04-26)
+
+
+### Features
+
+* implement frontend issues [#119](https://github.com/ChaoLing140/StellarInsure/issues/119), [#117](https://github.com/ChaoLing140/StellarInsure/issues/117), [#120](https://github.com/ChaoLing140/StellarInsure/issues/120), [#116](https://github.com/ChaoLing140/StellarInsure/issues/116) ([eaf53cb](https://github.com/ChaoLing140/StellarInsure/commit/eaf53cba795d8234dec61d473be9b23d9e8a7a96))
+
 # [1.10.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.9.1...v1.10.0) (2026-04-25)
 
 
