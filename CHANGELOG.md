@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.11.0...v1.12.0) (2026-04-26)
+
+
+### Features
+
+* **frontend:** add reusable modal, drawer, pagination, file validation, and policy selector components ([74dc5d8](https://github.com/ChaoLing140/StellarInsure/commit/74dc5d858738ceae4468b05456a4aab1d74b9930)), closes [#113](https://github.com/ChaoLing140/StellarInsure/issues/113) [#115](https://github.com/ChaoLing140/StellarInsure/issues/115) [#118](https://github.com/ChaoLing140/StellarInsure/issues/118) [#112](https://github.com/ChaoLing140/StellarInsure/issues/112)
+
 # [1.11.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.10.0...v1.11.0) (2026-04-26)
 
 
