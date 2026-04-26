@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { NetworkSwitcher } from "@/components/network-switcher";
 import { WalletConnectionButton } from "@/components/wallet-connection-button";
 import { CommandPalette } from "@/components/command-palette";
+import { KeyboardShortcutsHelp } from "@/components/keyboard-shortcuts-help";
 import { NotificationsPanel } from "@/components/notifications-panel";
 import { Icon } from "@/components/icon";
 
@@ -121,6 +122,7 @@ export function SiteHeader() {
             <Icon name="bell" size="md" tone="muted" />
           </button>
           <CommandPalette />
+          <KeyboardShortcutsHelp />
           <NetworkSwitcher />
           <WalletConnectionButton />
           <LanguageSwitcher />
@@ -147,6 +149,7 @@ export function SiteHeader() {
         </nav>
         <div className="mobile-drawer__actions">
           <CommandPalette />
+          <KeyboardShortcutsHelp />
           <NetworkSwitcher />
           <WalletConnectionButton />
           <LanguageSwitcher />
