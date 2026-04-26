@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.12.0...v1.13.0) (2026-04-26)
+
+
+### Features
+
+* **#124:** Add retry UI for failed transactions ([2b87699](https://github.com/ChaoLing140/StellarInsure/commit/2b87699890ffc0be702a71873ef1c0cc79fdc88d)), closes [#124](https://github.com/ChaoLing140/StellarInsure/issues/124)
+
 # [1.12.0](https://github.com/ChaoLing140/StellarInsure/compare/v1.11.0...v1.12.0) (2026-04-26)
 
 
