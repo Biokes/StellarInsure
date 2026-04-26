@@ -3,6 +3,8 @@
 import React, { type ReactNode, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
+import { Breadcrumbs } from "@/components/breadcrumbs";
+
 export interface LegalSection {
   /** URL-safe fragment identifier — used as `id` on the heading element. */
   id: string;
@@ -77,6 +79,13 @@ export function LegalPage({
 
   return (
     <main id="main-content" tabIndex={-1} className="legal-page">
+      <Breadcrumbs
+        items={[
+          { label: "Overview", href: "/" },
+          { label: eyebrow, href: "/legal/terms" },
+          { label: title },
+        ]}
+      />
       {/* ── Page header ──────────────────────────────────────────────────── */}
       <header className="legal-header">
         <div className="section-header">

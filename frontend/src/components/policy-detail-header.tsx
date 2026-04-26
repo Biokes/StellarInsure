@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { Skeleton } from "@/components/skeleton";
+import { CopyButton } from "@/components/copy-button";
 
 export type PolicyStatus =
   | "active"
@@ -123,6 +124,7 @@ export function PolicyDetailHeader({
           <div className="policy-header__info-item">
             <Icon name="document" size="sm" tone="muted" />
             <span>{policy.id}</span>
+            <CopyButton value={policy.id} label="Copy policy ID" size="sm" />
           </div>
         </div>
 
@@ -143,7 +145,14 @@ export function PolicyDetailHeader({
           </div>
           <div>
             <dt>Payout Address</dt>
-            <dd className="tx-detail-hash">{policy.payoutDestination}</dd>
+            <dd className="tx-detail-hash">
+              {policy.payoutDestination}
+              <CopyButton
+                value={policy.payoutDestination}
+                label="Copy payout address"
+                size="sm"
+              />
+            </dd>
           </div>
         </dl>
       </div>

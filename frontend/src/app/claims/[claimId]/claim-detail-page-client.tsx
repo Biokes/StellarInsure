@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Icon } from "@/components/icon";
 import { Skeleton, SkeletonText } from "@/components/skeleton";
 import { StatusPill } from "@/components/status-pill";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import {
   PolicyLifecycleTimeline,
   type LifecycleEvent,
@@ -230,6 +231,13 @@ export default function ClaimDetailPageClient({
 
   return (
     <main id="main-content" tabIndex={-1} className="claim-detail-page page-shell">
+      <Breadcrumbs
+        items={[
+          { label: "Overview", href: "/" },
+          { label: "History", href: "/history" },
+          { label: record.id },
+        ]}
+      />
       {/* Header */}
       <div className="section-header motion-panel">
         <span className="eyebrow">Claim Detail</span>

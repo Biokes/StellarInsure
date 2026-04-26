@@ -3,6 +3,7 @@
 import React from "react";
 import { Icon, type IconName } from "@/components/icon";
 import { Skeleton } from "@/components/skeleton";
+import { CopyButton } from "@/components/copy-button";
 
 export type NetworkType = "mainnet" | "testnet" | "futurenet";
 export type ConnectionHealth = "healthy" | "degraded" | "disconnected";
@@ -110,6 +111,11 @@ export function WalletStatusBadge({
           <span className="wallet-status-badge__address-text">
             {shortenAddress(wallet.address)}
           </span>
+          <CopyButton
+            value={wallet.address}
+            label="Copy wallet address"
+            size="sm"
+          />
           {wallet.balance !== undefined && !isCompact && (
             <span className="wallet-status-badge__balance">
               {formatBalance(wallet.balance)} XLM
