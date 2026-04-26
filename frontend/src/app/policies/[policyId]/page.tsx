@@ -1,8 +1,7 @@
-import React from "react";
 import type { Metadata } from "next";
 
-import { StructuredData } from "@/components/structured-data";
-import { buildMetadata, webPageStructuredData } from "@/lib/seo";
+import { PageSeo } from "@/components/page-seo";
+import { buildMetadata } from "@/lib/seo";
 
 import PolicyDetailPageClient from "./policy-detail-page-client";
 
@@ -42,12 +41,10 @@ export default function PolicyDetailPage({ params }: { params: { policyId: strin
 
   return (
     <>
-      <StructuredData
-        data={webPageStructuredData({
-          title: `${copy.title} | StellarInsure`,
-          description: copy.description,
-          pathname: `/policies/${params.policyId}`,
-        })}
+      <PageSeo
+        title={copy.title}
+        description={copy.description}
+        pathname={`/policies/${params.policyId}`}
       />
       <PolicyDetailPageClient params={params} />
     </>
